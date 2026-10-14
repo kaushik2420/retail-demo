@@ -164,6 +164,45 @@ textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;
 .ig .tg{margin-left:auto;flex:none}
 .cat{font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-3);margin:6px 0 2px}
 .recipe{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px dashed #c6d3df;border-radius:12px;padding:12px 14px;background:#fbfdfe}
+/* zoona */
+.zband{background:linear-gradient(120deg,#13202e,#253043 60%,#2b2f5e);color:#fff;border:0}
+.zband .hint{color:#b8c6d4}
+.zlogo{width:40px;height:40px;border-radius:12px;background:conic-gradient(from 210deg,#ffb86b,#ff6fa8,#8f6bff,#4fd1e0,#ffb86b);display:flex;align-items:center;justify-content:center;flex:none}
+.zlogo b{width:30px;height:30px;border-radius:9px;background:#13202e;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}
+.zk{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:6px}
+.zk div{background:rgba(255,255,255,.07);border-radius:10px;padding:12px 14px}
+.zk span{display:block;font-size:12px;color:#b8c6d4;font-weight:600}.zk b{font-size:24px;font-variant-numeric:tabular-nums}
+.scen{display:flex;gap:8px;flex-wrap:wrap}
+.scen button{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-weight:700;font-size:12.5px;text-align:left;display:flex;gap:8px;align-items:center}
+.scen button[aria-pressed="true"]{border-color:var(--ai);background:var(--ai-soft);color:var(--ai)}
+.chb{font-size:10.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;border-radius:5px;padding:2px 6px;background:var(--line-2);color:var(--ink-2)}
+.convo{background:#f7f9fb;border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;min-height:380px}
+.mail{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;animation:rise .3s ease-out}
+.mail .hd{font-size:12px;color:var(--ink-3);border-bottom:1px solid var(--line-2);padding-bottom:6px;margin-bottom:8px}
+.mail.z{border-color:#cfc4ff;background:#fbfaff}
+.trace{display:flex;flex-direction:column;gap:0;position:relative}
+.step{display:grid;grid-template-columns:28px 1fr;gap:10px;padding:0 0 14px;position:relative;animation:rise .3s ease-out}
+.step::before{content:"";position:absolute;left:13px;top:28px;bottom:0;width:2px;background:var(--line)}
+.step:last-child::before{display:none}
+.step .dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;background:var(--c,var(--ai))}
+.step>div:last-child{min-width:0}.step b{font-size:13.5px}.step .small{display:block}
+.call{display:block;width:fit-content;margin-top:4px;font-family:var(--f-mono);font-size:11.5px;background:#11192a;color:#a8f0c6;border-radius:6px;padding:4px 8px;max-width:100%;overflow-x:auto;white-space:nowrap}
+.outcome{border-radius:12px;padding:12px 14px;font-weight:700;animation:rise .3s ease-out}
+.who{display:inline-flex;align-items:center;gap:6px}
+.who i{width:18px;height:18px;border-radius:6px;background:conic-gradient(from 210deg,#ffb86b,#ff6fa8,#8f6bff,#4fd1e0,#ffb86b);display:inline-block}
+/* research */
+.qrow{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line-2)}
+.qn{width:30px;height:30px;border-radius:8px;background:var(--line-2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:var(--ink-2)}
+.concepts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.concept{border:2px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.concept.win{border-color:var(--good)}
+.concept .ph-img{aspect-ratio:16/10;border-radius:8px;max-width:100%}
+.big{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
+.prog{height:12px;border-radius:6px;background:var(--line-2);overflow:hidden}.prog>i{display:block;height:100%;background:var(--teal);transition:width .6s}
+.xt td,.xt th{text-align:center}.xt td:first-child,.xt th:first-child{text-align:left}
+.xt td.hi{background:var(--good-soft);font-weight:800;color:#0b7d5a}
+.sig{font-size:10px;font-weight:800;color:#0b7d5a;vertical-align:super}
+@media (max-width:1180px){.zk{grid-template-columns:repeat(3,minmax(0,1fr))}.concepts{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:1180px){.g-kpi{grid-template-columns:repeat(3,minmax(0,1fr))}.g-2,.g-2e{grid-template-columns:minmax(0,1fr)}.g-3{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:820px){
   .app{grid-template-columns:minmax(0,1fr);background:none}
@@ -188,6 +227,7 @@ textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;
     <button class="nav" data-v="store"><svg viewBox="0 0 24 24"><path d="M4 9l1.5-5h13L20 9M4 9h16v11H4zM9 20v-6h6v6"/></svg>Storefront SpotChecks</button>
     <button class="nav" data-v="echo"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M9 10h.01M15 10h.01"/></svg>Echo AI Agent<span class="new">AI</span></button>
     <button class="nav" data-v="tix"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v3a2 2 0 000 4v3a2 2 0 01-2 2H5a2 2 0 01-2-2v-3a2 2 0 000-4z"/><path d="M14 5v14"/></svg>Tickets</button>
+    <button class="nav" data-v="mr"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5M8.5 12.5v-2M11 12.5v-4M13.5 12.5v-3"/></svg>Market Research</button>
     <button class="nav" data-v="cog"><svg viewBox="0 0 24 24"><path d="M4 6h10M4 12h16M4 18h7"/><path d="M19 3l1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/></svg>CogniVue<span class="new">AI</span></button>
     <button class="nav" data-v="rep"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6L3.3 9.2l6.1-.6z"/></svg>Reputation</button>
     <button class="nav" data-v="int"><svg viewBox="0 0 24 24"><path d="M8 3v5a4 4 0 008 0V3M10 3v3M14 3v3M12 12v9"/></svg>Integrations</button>
@@ -261,6 +301,35 @@ textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;
 
     <!-- TICKETS -->
     <section class="view" id="v-tix">
+      <div class="panel zband">
+        <div class="ph" style="margin-bottom:8px"><div class="zlogo"><b>Z</b></div><div><h2 style="font-size:17px">Zoona AI agent · SparrowDesk</h2><div class="hint">Resolves shopper tickets on email and live chat by itself, and hands off to your team with a summary when it should</div></div><div class="sp"></div><span class="pill p-good">Live on email + chat</span></div>
+        <div class="zk"><div><span>Auto-resolved by Zoona</span><b>61%</b></div><div><span>Median time to resolve</span><b>48s</b></div><div><span>Actions taken (30d)</span><b>3,912</b></div><div><span>CSAT on Zoona chats</span><b>4.5<small style="font-size:13px;color:#b8c6d4">/5</small></b></div><div><span>Agent hours saved</span><b>310h</b></div></div>
+      </div>
+      <div class="grid g-2">
+        <div class="panel">
+          <div class="ph"><h2>Try a shopper request</h2><span class="hint">Pick one and watch Zoona work it</span></div>
+          <div class="scen" id="scen"></div>
+          <div class="convo" id="convo" style="margin-top:14px"></div>
+        </div>
+        <div class="panel">
+          <div class="ph"><h2>What Zoona did</h2><span class="hint">Every step is logged on the ticket</span><div class="sp"></div><button class="btn ghost" id="zrun">Run again</button></div>
+          <div class="trace" id="trace"></div>
+        </div>
+      </div>
+      <div class="grid g-2e">
+        <div class="panel"><div class="ph"><h2>What Zoona learns from</h2><span class="hint">No writing needed. It reads what you already have</span></div>
+          <div class="grid g-2e" style="gap:10px" id="zsrc"></div>
+        </div>
+        <div class="panel"><div class="ph"><h2>Survey to support, in one loop</h2></div>
+          <div class="flow">
+            <div class="node"><small>SurveySparrow</small>Detractor: “where's my refund?”</div><span class="arrow">→</span>
+            <div class="node"><small>SparrowDesk</small>Ticket created</div><span class="arrow">→</span>
+            <div class="node"><small>Zoona</small>Checks Stripe, replies, resolves</div><span class="arrow">→</span>
+            <div class="node"><small>SurveySparrow</small>CSAT + NPS re-survey</div>
+          </div>
+          <p class="small muted" style="margin:12px 0 0">Zoona replies in the shopper's language. Anything outside policy goes to a person, with the full conversation, what Zoona already checked and a one-line summary.</p>
+        </div>
+      </div>
       <div class="grid g-kpi" id="tkpis"></div>
       <div class="panel">
         <div class="ph"><h2>Close-the-loop queue</h2><div class="sp"></div><div class="tabs" id="ttabs"><button aria-pressed="true" data-s="Open">Open</button><button aria-pressed="false" data-s="Pending">Pending</button><button aria-pressed="false" data-s="Resolved">Resolved</button><button aria-pressed="false" data-s="All">All</button></div></div>
@@ -276,6 +345,36 @@ textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;
           <div class="node"><small>Sync</small>Zendesk + Salesforce</div>
         </div>
       </div>
+    </section>
+
+    <!-- MARKET RESEARCH -->
+    <section class="view" id="v-mr">
+      <div class="panel">
+        <div class="ph"><div><div class="small muted">Concept test · conversational survey · Audience Panel</div><h2 style="font-size:18px">Kestrel Essentials: autumn private-label range</h2></div><div class="sp"></div><span class="pill p-good" id="mr-status">● Fieldwork live</span><button class="btn ghost" id="mr-sim">Simulate fieldwork</button></div>
+        <div class="grid g-kpi" style="gap:12px">
+          <div class="panel kpi" style="grid-column:span 2"><div class="l">Completes</div><div class="v"><span id="mr-n">512</span><small>/ 800</small></div><div class="prog" style="margin-top:8px"><i id="mr-bar" style="width:64%"></i></div><div class="d muted" style="font-weight:500;margin-top:6px">Responses arrive in real time from the panel</div></div>
+          <div class="panel kpi"><div class="l">Audience</div><div class="v" style="font-size:20px">UK · 18–54</div><div class="d muted" style="font-weight:500">bought clothing online in the last 3 months</div></div>
+          <div class="panel kpi"><div class="l">Incidence</div><div class="v">62%</div><div class="d muted" style="font-weight:500">passed the screener</div></div>
+          <div class="panel kpi"><div class="l">Median time</div><div class="v">6<small>min</small></div><div class="d muted" style="font-weight:500">chat-style survey</div></div>
+          <div class="panel kpi"><div class="l">Removed in QC</div><div class="v">3.1%</div><div class="d muted" style="font-weight:500">speeders &amp; straight-liners, replaced</div></div>
+        </div>
+      </div>
+      <div class="grid g-2">
+        <div class="panel"><div class="ph"><h2>Concept results</h2><span class="hint">Top-2 box, 5-point scale</span></div><div class="concepts" id="concepts"></div></div>
+        <div class="panel"><div class="ph"><h2>Sample plan</h2><span class="hint">targets by region</span></div><div id="sample"></div>
+          <div class="cat" style="margin-top:14px">Targeting on the panel</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><span class="pill p-n">UK, 130+ countries available</span><span class="pill p-n">Age 18–54</span><span class="pill p-n">All genders, natural fallout</span><span class="pill p-n">Online fashion buyers</span><span class="pill p-n">Household income</span><span class="pill p-n">Excludes retail employees</span></div>
+        </div>
+      </div>
+      <div class="grid g-2">
+        <div class="panel"><div class="ph"><h2>Cross-tab: purchase intent by age</h2><span class="hint">top-2 box % · <span class="sig">▲</span> significantly higher at 95%</span></div><div class="tw"><table class="xt" id="xt"></table></div>
+          <div class="answer" id="mr-ai" style="margin-top:16px"></div></div>
+        <div class="grid" style="align-content:start">
+          <div class="panel"><div class="ph"><h2>What feels right to pay</h2><span class="hint">Concept B · slider, £</span></div><div id="price"></div></div>
+          <div class="panel"><div class="ph"><h2>What matters most</h2><span class="hint">ranking question · avg rank</span></div><div id="rank"></div></div>
+        </div>
+      </div>
+      <div class="panel"><div class="ph"><h2>Questionnaire</h2><span class="hint">Built with Wing AI from a one-line brief</span><div class="sp"></div><span class="pill p-ai">✦ “Test 3 private-label concepts with UK online shoppers”</span></div><div id="qs"></div></div>
     </section>
 
     <!-- COGNIVUE -->
@@ -340,7 +439,7 @@ let region="all";
 const sel=()=>STORES.filter(s=>region==="all"||s.r===region);
 const wavg=(arr,f)=>{let t=0,w=0;arr.forEach(s=>{const v=f(s);if(v!=null){t+=v*s.resp;w+=s.resp}});return w?t/w:0};
 /* ---------- nav ---------- */
-const TITLES={dash:["Insights","Retail CX Executive Dashboard"],store:["Channels","Storefront SpotChecks"],echo:["AI Suite","Echo · Conversational AI Agent"],tix:["Close the loop","Ticket Management"],cog:["AI Suite","CogniVue · Retail Insights"],rep:["Channels","Reputation Management"],int:["Settings","Retail Integrations"]};
+const TITLES={dash:["Insights","Retail CX Executive Dashboard"],store:["Channels","Storefront SpotChecks"],echo:["AI Suite","Echo · Conversational AI Agent"],tix:["Close the loop","Ticket Management · Zoona AI"],cog:["AI Suite","CogniVue · Retail Insights"],mr:["Research","Market Research · Concept Test"],rep:["Channels","Reputation Management"],int:["Settings","Retail Integrations"]};
 function go(v){$$('.nav').forEach(b=>b.setAttribute('aria-current',b.dataset.v===v?'page':'false'));$$('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));$('#crumb').textContent='Kestrel & Co. / '+TITLES[v][0];$('#title').textContent=TITLES[v][1];try{localStorage.setItem('ss-view',v)}catch(e){}window.scrollTo(0,0)}
 $$('.nav').forEach(b=>b.onclick=()=>go(b.dataset.v));
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
@@ -467,13 +566,16 @@ const TIX=[
  {id:"TCK-4809",c:"Olivia Grant",tier:"Silver",st:"Leeds Trinity",src:"WhatsApp",th:"Click & Collect wait",p:"Medium",sla:"Breached",a:"Owen Price",s:"Open",fb:"Waited 20 minutes at the Click & Collect desk with nobody there.",score:"NPS 4"},
  {id:"TCK-4805",c:"James Shaw",tier:"—",st:"London Oxford St",src:"Google review",th:"Fitting-room queues",p:"Low",sla:"20h 15m",a:"Hannah Cole",s:"Pending",fb:"Queue for fitting rooms was 25 minutes on Saturday and only one till open.",score:"2★"},
  {id:"TCK-4798",c:"Ben Carter",tier:"Gold",st:"Westfield Stratford",src:"Kiosk",th:"Staff availability",p:"Medium",sla:"—",a:"Maya Osei",s:"Resolved",fb:"Couldn't find anyone to help on the shop floor.",score:"NPS 5"},
+ {id:"TCK-4831",c:"Ruth Okafor",tier:"Silver",st:"Online",src:"Email",th:"Where is my order",p:"Low",sla:"—",a:"Zoona",s:"Resolved",fb:"Order KC-20944 hasn't arrived after 5 days.",score:"—",z:1},
+ {id:"TCK-4829",c:"Ethan Moore",tier:"—",st:"Online",src:"Live chat",th:"Address change",p:"Low",sla:"—",a:"Zoona",s:"Resolved",fb:"Can I change the delivery address on the order I placed 20 minutes ago?",score:"—",z:1},
+ {id:"TCK-4827",c:"Sara Mendes",tier:"Gold",st:"Online",src:"Email",th:"Damaged item",p:"High",sla:"3h 05m",a:"Tom Mills",s:"Open",fb:"My £180 wool coat arrived with a torn seam.",score:"—",z:2},
  {id:"TCK-4790",c:"Chloe Adams",tier:"Silver",st:"Online",src:"Email",th:"Delivery delay",p:"Low",sla:"—",a:"Tom Mills",s:"Resolved",fb:"Order took 8 days to arrive.",score:"CSAT 2"}];
 let tFilter="Open";
 const AVC=["#c9e6ff","#ffe3c9","#dff5e8","#efe6ff","#ffd9e6","#d7f3f8"];
 function renderTix(){const open=TIX.filter(t=>t.s==="Open").length;
-  $('#tkpis').innerHTML=[["Open tickets",open+29,"",`<span class="dn">3 past SLA</span>`],["Avg first response","1h 52m","",`<span class="up">▼ 38%</span> since auto-routing`],["Avg resolution","19h","",`<span class="up">▼ 6h</span> vs last month`],["Loop closed","87%","",`of detractors contacted`],["Recovered","41%","",`detractors re-surveyed as 7+`],["Saved revenue","£48k","",`recovered customers × annual spend`]].map(x=>`<div class="panel kpi"><div class="l">${x[0]}</div><div class="v">${x[1]}</div><div class="d">${x[3]}</div></div>`).join('');
+  $('#tkpis').innerHTML=[["Open tickets",open+29,"",`<span class="dn">3 past SLA</span>`],["First response","48s","",`<span class="up">Zoona replies instantly</span>, 24/7`],["Avg resolution","19h","",`<span class="up">▼ 6h</span> vs last month`],["Loop closed","87%","",`of detractors contacted`],["Recovered","41%","",`detractors re-surveyed as 7+`],["Saved revenue","£48k","",`recovered customers × annual spend`]].map(x=>`<div class="panel kpi"><div class="l">${x[0]}</div><div class="v">${x[1]}</div><div class="d">${x[3]}</div></div>`).join('');
   const rows=TIX.filter(t=>tFilter==="All"||t.s===tFilter);
-  $('#ttable').innerHTML=`<thead><tr><th>Ticket</th><th>Customer</th><th>Location</th><th>Source</th><th>Theme</th><th>Priority</th><th>SLA</th><th>Assignee</th></tr></thead><tbody>`+rows.map((t,i)=>`<tr class="click" tabindex="0" data-id="${t.id}"><td class="mono">${t.id}</td><td><b>${t.c}</b>${t.tier!=="—"?` <span class="pill p-info">${t.tier}</span>`:''}</td><td>${t.st}</td><td class="small">${t.src}</td><td><span class="pill p-n">${t.th}</span></td><td><span class="pill ${t.p==="High"?'p-bad':t.p==="Medium"?'p-warn':'p-n'}">${t.p}</span></td><td class="${t.sla==="Breached"?'dn':''}" style="font-weight:700">${t.sla}</td><td><span style="display:inline-flex;gap:8px;align-items:center"><span class="av" style="background:${AVC[i%6]}">${t.a.split(' ').map(w=>w[0]).join('')}</span>${t.a}</span></td></tr>`).join('')+'</tbody>';
+  $('#ttable').innerHTML=`<thead><tr><th>Ticket</th><th>Customer</th><th>Location</th><th>Source</th><th>Theme</th><th>Priority</th><th>SLA</th><th>Handled by</th></tr></thead><tbody>`+rows.map((t,i)=>`<tr class="click" tabindex="0" data-id="${t.id}"><td class="mono">${t.id}</td><td><b>${t.c}</b>${t.tier!=="—"?` <span class="pill p-info">${t.tier}</span>`:''}</td><td>${t.st}</td><td class="small">${t.src}</td><td><span class="pill p-n">${t.th}</span></td><td><span class="pill ${t.p==="High"?'p-bad':t.p==="Medium"?'p-warn':'p-n'}">${t.p}</span></td><td class="${t.sla==="Breached"?'dn':''}" style="font-weight:700">${t.sla}</td><td>${t.z===1?`<span class="who"><i></i><b>Zoona</b> <span class="pill p-good">Auto-resolved</span></span>`:`<span style="display:inline-flex;gap:8px;align-items:center"><span class="av" style="background:${AVC[i%6]}">${t.a.split(' ').map(w=>w[0]).join('')}</span>${t.a}${t.z===2?' <span class="pill p-ai">from Zoona</span>':''}</span>`}</td></tr>`).join('')+'</tbody>';
   $$('#ttable tr.click').forEach(r=>{r.onclick=()=>tDrawer(r.dataset.id);r.onkeydown=e=>{if(e.key==='Enter')tDrawer(r.dataset.id)}})}
 $$('#ttabs button').forEach(b=>b.onclick=()=>{tFilter=b.dataset.s;$$('#ttabs button').forEach(x=>x.setAttribute('aria-pressed',x===b));renderTix()});
 const REPLY=t=>`Hi ${t.c.split(' ')[0]}, thank you for telling us about this, and I'm sorry. ${t.th==="Damaged item"?"We're sending a replacement today and a courier will collect the damaged vase, so there's nothing to print.":t.th==="Returns process"?"Your app order history counts as proof of purchase. I've refunded you to your original card and briefed the store team.":t.th==="Stock availability"?"I've reserved your size at our Bullring store for 48 hours and fixed the stock sync that showed it as available.":"I've shared this with the team responsible and we're fixing it this week."} I'm your direct contact if anything else comes up.`;
@@ -494,6 +596,62 @@ function tDrawer(id){const t=TIX.find(x=>x.id===id);const L=$('#layer');
   L.querySelector('#pend').onclick=()=>{t.s="Pending";close();renderTix();toast(t.id+' moved to Pending')};
   L.querySelector('#assign').onchange=e=>{t.a=e.target.value;renderTix();toast('Reassigned to '+e.target.value)};
   document.addEventListener('keydown',function k(e){if(e.key==='Escape'){close();document.removeEventListener('keydown',k)}});L.querySelector('.x').focus()}
+/* ---------- zoona ---------- */
+const ZS=[
+ {k:"wismo",ch:"Email",t:"Where's my order?",from:"Ruth Okafor <ruth.o@…>",subj:"Order KC-20944 still not here",msg:"Hi, I ordered a jumper and jeans 5 days ago (KC-20944) and it still hasn't arrived. It was meant to take 3 days. Can you check?",
+  steps:[["Understood the request","Order status · late delivery · customer sounds frustrated","#3a7bff",""],["Looked up the order","Shipped Friday with DPD. Held at the Hinckley depot, now out for delivery.","#5e8e3e","shopify.orders.get(\"KC-20944\") → dpd.tracking(\"15502…\")"],["Checked the policy","Help center: “Late by 2+ days → £5 credit”","#1597a8","kb.search(\"late delivery compensation\")"],["Took action","Added £5 store credit to Ruth's account","#e8930c","shopify.customers.credit(…, 5.00, \"late delivery\")"],["Replied and resolved","Sent ETA, tracking link and the credit note","#12a679",""]],
+  reply:"Hi Ruth, sorry your order is late. It was held at the DPD depot and is out for delivery today, before 6pm. Here's your tracking link. I've added £5 credit to your account for the wait.",
+  out:["good","✓ Resolved by Zoona in 41s · CSAT survey sent"]},
+ {k:"addr",ch:"Live chat",t:"Change delivery address",from:"Ethan Moore",msg:"hey, I just ordered but put my old address 🙈 can I change it?",
+  steps:[["Understood the request","Address change · order placed 20 min ago","#3a7bff",""],["Looked up the order","KC-20951 is not yet fulfilled, so it can still change","#5e8e3e","shopify.orders.get(\"KC-20951\") → status: unfulfilled"],["Asked for the new address","Confirmed it in the chat before changing anything","#d6338a",""],["Took action","Updated the shipping address on the order","#e8930c","shopify.orders.update(\"KC-20951\", {shipping_address: …})"],["Replied and resolved","Confirmation sent by email too","#12a679",""]],
+  convo:[["c","hey, I just ordered but put my old address 🙈 can I change it?"],["z","No problem, Ethan. Your order KC-20951 hasn't been packed yet, so I can change it. What's the new address?"],["c","14 Albion Street, Leeds LS1 6HX"],["z","Done ✅ Order KC-20951 will now go to 14 Albion Street, Leeds LS1 6HX. I've emailed you a confirmation too."]],
+  out:["good","✓ Resolved by Zoona in 1m 12s · no agent needed"]},
+ {k:"promo",ch:"Live chat",t:"Promo code not working",from:"Marcus Hill",msg:"WELCOME10 isn't working at checkout??",
+  steps:[["Understood the request","Promo code error at checkout","#3a7bff",""],["Checked the code and bag","WELCOME10 needs £50 minimum spend. Bag is £42.","#5e8e3e","shopify.discounts.get(\"WELCOME10\") · cart.total = 42.00"],["Spotted a known issue","3 similar chats today. Logged to CogniVue theme “Promo code errors”.","#6247ea","surveysparrow.themes.tag(\"Promo code errors\")"],["Took action","Created a one-time 10% code with no minimum","#e8930c","shopify.discounts.create({code: \"KC10-MH7Q\", once: true})"],["Replied and resolved","Customer went on to complete checkout","#12a679",""]],
+  convo:[["c","WELCOME10 isn't working at checkout??"],["z","Sorry about that, Marcus. WELCOME10 needs a £50 spend and your bag is £42. Here's a one-time code with no minimum instead: KC10-MH7Q"],["c","worked, thanks!"],["z","Great. Enjoy your order 🙂"]],
+  out:["good","✓ Resolved by Zoona in 52s · order completed (£37.80)"]},
+ {k:"damage",ch:"Email",t:"Damaged £180 coat",from:"Sara Mendes <sara.m@…>",subj:"Coat arrived torn",msg:"My new wool coat (£180) arrived today with a torn seam on the sleeve. Really disappointed as it was a birthday present. Photos attached.",
+  steps:[["Understood the request","Damaged item · high value · Gold member · upset","#3a7bff",""],["Looked up the order","KC-20937 · Wool Overcoat £180 · delivered yesterday","#5e8e3e","shopify.orders.get(\"KC-20937\")"],["Checked the policy","Refunds over £100 need a person to approve","#1597a8","kb.search(\"damaged item refund approval\")"],["Handed off to a person","Returns team gets the full thread, photos, what Zoona checked and a summary","#df4146","sparrowdesk.tickets.assign(\"Returns Team\", priority: \"high\")"],["Kept the shopper informed","Acknowledged within seconds and set expectations","#12a679",""]],
+  reply:"Hi Sara, I'm really sorry, especially for a birthday present. I've passed this to our returns team with your photos, and they'll contact you within 4 hours to arrange a replacement or refund.",
+  summary:"Gold member · £180 coat with a torn seam, delivered yesterday · photos attached · wants it fixed before a birthday. Suggest: express replacement + courier pickup.",
+  out:["ai","↗ Handed to Returns Team · summary and suggested reply attached"]}
+];
+let zCur=0,zTimers=[];
+function zRender(){ $('#scen').innerHTML=ZS.map((z,i)=>`<button aria-pressed="${i===zCur}" data-i="${i}"><span class="chb">${z.ch}</span>${z.t}</button>`).join('');
+  $$('#scen button').forEach(b=>b.onclick=()=>{zCur=+b.dataset.i;zRender();zRun()})}
+function zRun(){zTimers.forEach(clearTimeout);zTimers=[];const z=ZS[zCur];const cv=$('#convo'),tr=$('#trace');cv.innerHTML='';tr.innerHTML='';
+  const later=(ms,f)=>zTimers.push(setTimeout(f,ms));
+  if(z.ch==='Email'){cv.innerHTML=`<div class="mail"><div class="hd"><b>${esc(z.from)}</b> · ${esc(z.subj)}</div>${esc(z.msg)}</div>`}
+  else{const first=document.createElement('div');first.className='b me';first.textContent=z.convo[0][1];cv.appendChild(first)}
+  let t=500;
+  z.steps.forEach((s,i)=>{later(t,()=>{const d=document.createElement('div');d.className='step';d.style.setProperty('--c',s[2]);d.innerHTML=`<div class="dot">${i+1}</div><div><b>${s[0]}</b><span class="small muted">${s[1]}</span>${s[3]?`<code class="call">${esc(s[3])}</code>`:''}</div>`;tr.appendChild(d)});
+    if(z.convo){const pairs=z.convo.slice(1);const idx={2:0,3:1,4:2}[i];if(idx!==undefined&&pairs[idx]){later(t+300,()=>{const m=pairs[idx];const b=document.createElement('div');b.className='b '+(m[0]==='z'?'ai':'me');b.innerHTML=m[0]==='z'?`<span class="st" style="color:var(--ai)">Zoona</span>${esc(m[1])}`:esc(m[1]);cv.appendChild(b)})}}
+    t+=750});
+  later(t,()=>{if(z.reply){const r=document.createElement('div');r.className='mail z';r.innerHTML=`<div class="hd"><span class="who"><i></i><b>Zoona</b></span> · Kestrel &amp; Co. Support</div>${esc(z.reply)}`;cv.appendChild(r)}
+    if(z.summary){const sm=document.createElement('div');sm.className='mail';sm.style.borderColor='#df4146';sm.innerHTML=`<div class="hd"><b>Handoff note for Returns Team</b></div>${esc(z.summary)}`;cv.appendChild(sm)}
+    const o=document.createElement('div');o.className='outcome';o.style.background=z.out[0]==='good'?'var(--good-soft)':'var(--ai-soft)';o.style.color=z.out[0]==='good'?'#0b7d5a':'var(--ai)';o.textContent=z.out[1];tr.appendChild(o)})}
+$('#zrun').onclick=zRun;
+$('#zsrc').innerHTML=[["Help center","142 articles · returns, delivery, sizing"],["Website","kestrelandco.com product pages"],["Past conversations","18 months of resolved tickets"],["Notion & docs","Store policies, promo rules"]].map(x=>`<div class="ig"><div class="ic" style="background:var(--navy)">✓</div><div><div class="n">${x[0]}</div><div class="s">${x[1]}</div></div></div>`).join('')+`<div class="alert" style="--c:#e8930c;grid-column:1/-1"><b>Knowledge gap found</b><div class="small muted">12 chats this week asked about Click &amp; Collect opening hours at Leeds Trinity. Zoona drafted a help article for review.</div></div>`;
+/* ---------- market research ---------- */
+const CON=[["A","Linen Basics","linear-gradient(135deg,#efe4d3,#c9b08f)",[48,41,52],31],["B","Recycled Denim","linear-gradient(135deg,#b9cbe0,#4f6f93)",[61,58,49],44],["C","Tailored Knit","linear-gradient(135deg,#d9c6d6,#8b6a86)",[39,36,44],25]];
+function renderMR(){
+  $('#concepts').innerHTML=CON.map((c,i)=>`<div class="concept ${i===1?'win':''}"><div class="ph-img" style="background:${c[2]}"></div><div style="display:flex;align-items:center;gap:6px"><b>Concept ${c[0]} · ${c[1]}</b>${i===1?'<span class="pill p-good">Winner</span>':''}</div><div><span class="big">${c[3][0]}%</span> <span class="small muted">would buy</span></div>
+   ${[["Unique",c[3][1]],["Good value",c[3][2]],["Picked as favourite",c[4]]].map(m=>`<div style="font-size:12.5px"><div style="display:flex;justify-content:space-between"><span class="muted">${m[0]}</span><b>${m[1]}%</b></div><div class="track" style="height:8px;margin-top:4px"><i style="width:${m[1]}%;background:${i===1?'var(--good)':'#9aa7b6'}"></i></div></div>`).join('')}</div>`).join('');
+  $('#sample').innerHTML=[["London",200,141],["South & South West",160,108],["Midlands",140,89],["North",180,112],["Scotland & Wales",120,62]].map(r=>`<div class="stage" style="grid-template-columns:150px 1fr 70px"><span>${r[0]}</span><div class="track"><i style="width:${r[2]/r[1]*100}%;background:var(--teal)"></i></div><span class="small" style="text-align:right"><b>${r[2]}</b>/${r[1]}</span></div>`).join('');
+  const ages=["18–24","25–34","35–44","45–54"];const X=[[44,49,51,46],[72,68,54,47],[28,35,44,47]];
+  $('#xt').innerHTML=`<thead><tr><th>Concept</th>${ages.map(a=>`<th>${a}</th>`).join('')}<th>Total</th></tr></thead><tbody>`+CON.map((c,i)=>`<tr><td><b>${c[0]} · ${c[1]}</b></td>${X[i].map((v,j)=>{const hi=(i===1&&j<2)||(i===2&&j===3);return `<td class="${hi?'hi':''}">${v}%${hi?'<span class="sig">▲</span>':''}</td>`}).join('')}<td><b>${c[3][0]}%</b></td></tr>`).join('')+`<tr><td class="small muted">Base (n)</td>${[118,141,132,121].map(n=>`<td class="small muted">${n}</td>`).join('')}<td class="small muted">512</td></tr></tbody>`;
+  $('#mr-ai').innerHTML=`<b style="color:var(--ai)">✦ Co-Pilot summary</b><br>Concept B (Recycled Denim) leads overall at 61% purchase intent and is strongest with under-35s (72% and 68%). Concept C over-indexes with 45–54s, so it suits a smaller, targeted drop. In open answers, shoppers link B to “sustainable” and “good quality for the price”. Price it at £45–£55: that's where most of the B sample sits.`;
+  const P=[[25,3],[30,6],[35,11],[40,17],[45,24],[50,22],[55,11],[60,4],[65,2]];const mx=24;
+  let s=`<svg viewBox="0 0 420 170" width="100%" role="img" aria-label="Distribution of fair price for Concept B">`;
+  [0,10,20].forEach(v=>{const y=140-v/mx*120;s+=`<line x1="30" x2="410" y1="${y}" y2="${y}" stroke="#eef2f6"/><text x="24" y="${y+4}" text-anchor="end" font-size="10" fill="#7b8796">${v}%</text>`});
+  P.forEach((p,i)=>{const w=36,x=36+i*41,h=p[1]/mx*120,hi=p[0]>=45&&p[0]<=55;s+=`<rect x="${x}" y="${140-h}" width="${w}" height="${h}" rx="4" fill="${hi?'#1597a8':'#c9d6e2'}"/><text x="${x+w/2}" y="156" text-anchor="middle" font-size="10.5" fill="#4a5667">£${p[0]}</text>`});
+  $('#price').innerHTML=s+`</svg><p class="small" style="margin:6px 0 0"><b>57%</b> chose £45–£55. Median £47.`;
+  $('#rank').innerHTML=[["Fabric quality",1.8],["Price",2.3],["Sustainable materials",2.9],["Fit & sizing range",3.1],["Brand name",4.9]].map((r,i)=>`<div class="stage" style="grid-template-columns:24px minmax(0,1fr) 120px 40px"><span class="qn" style="width:22px;height:22px;font-size:11px">${i+1}</span><span>${r[0]}</span><div class="track"><i style="width:${(6-r[1])/5*100}%;background:var(--ai)"></i></div><b style="text-align:right">${r[1]}</b></div>`).join('');
+  $('#qs').innerHTML=[["Screener","Multiple choice","Have you bought clothing online in the last 3 months?"],["Concept exposure","Image choice","Which of these three ranges appeals to you most?"],["Purchase intent","Opinion scale 1–5","How likely would you be to buy Concept B?"],["Price","Slider (£)","What would feel like a fair price for this item?"],["Drivers","Ranking","Rank what matters most when choosing everyday basics."],["Budget","Constant sum","Split £100 of your autumn clothing budget across these categories."],["Why","Open text → CogniVue","What, if anything, would stop you buying it?"]].map((q,i)=>`<div class="qrow"><span class="qn">Q${i+1}</span><div style="min-width:0"><b>${q[2]}</b><div class="small muted">${q[0]}</div></div><span class="pill p-n">${q[1]}</span></div>`).join('');
+}
+let mrN=512,mrIv=null;
+$('#mr-sim').onclick=()=>{if(mrIv)return;$('#mr-sim').textContent='Collecting…';mrIv=setInterval(()=>{mrN=Math.min(800,mrN+Math.ceil(Math.random()*9));$('#mr-n').textContent=mrN;$('#mr-bar').style.width=(mrN/8)+'%';if(mrN>=800){clearInterval(mrIv);mrIv=null;$('#mr-status').textContent='✓ Fieldwork complete';$('#mr-sim').textContent='Target reached';toast('800 completes reached. Report scheduled to your inbox.')}},180)};
+
 /* ---------- cognivue ---------- */
 const THEMES=[
  {n:"Delivery delays",m:2140,pos:12,neu:18,imp:-7.2,tr:[3,4,4,5,6,7,8],q:[.12,.18]},
@@ -541,7 +699,7 @@ function renderInt(){let on=0;$('#ints').innerHTML=INT.map(([c,a])=>`<div class=
   $$('#ints .tg').forEach(b=>b.onclick=()=>{const v=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',v);toast(b.dataset.n+(v?' connected':' disconnected'));const n=$$('#ints .tg[aria-pressed="true"]').length;$('#icount').textContent=n+' connected'})}
 $('#recipes').innerHTML=[["Shopify","Order delivered","+2 days","Delivery CSAT on WhatsApp (Echo)"],["POS via SFTP","Store receipt","same evening","In-store NPS by location"],["Score ≤ 6","Detractor","instantly","Zendesk ticket with order context + Slack alert"],["Score 9–10","Promoter","+2 hours","Klaviyo flow with Google review invite"],["Stripe","Refund issued","+1 day","Returns CES survey"],["All responses","Nightly","02:00","Snowflake → Power BI exec dashboard"]].map(r=>`<div class="recipe"><span class="pill p-info">${r[0]}</span><b>${r[1]}</b><span class="muted small">${r[2]}</span><span class="arrow">→</span><span>${r[3]}</span></div>`).join('');
 /* ---------- boot ---------- */
-renderDash();renderRules();page('pdp');echoStart();renderTix();renderCog();renderRep();renderReviews();renderInt();
+renderDash();renderRules();page('pdp');echoStart();zRender();zRun();renderMR();renderTix();renderCog();renderRep();renderReviews();renderInt();
 const hv=(location.hash||'').slice(1);let sv=null;try{sv=localStorage.getItem('ss-view')}catch(e){}
 if(TITLES[hv])go(hv);else if(sv&&TITLES[sv])go(sv);
 })();
