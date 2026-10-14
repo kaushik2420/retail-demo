@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SurveySparrow Retail Demo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: product-app shell — navy rail, light canvas, one view at a time. Single light theme to match the SurveySparrow app. */
+:root{
+  --navy:#253043; --navy-2:#1b2433; --sky:#B1EAF8; --teal:#1597a8; --teal-ink:#0e7584; --ai:#6247ea; --ai-soft:#efeaff;
+  --bg:#f3f6f9; --surface:#ffffff; --line:#e3e9ef; --line-2:#eef2f6; --ink:#1d2735; --ink-2:#4a5667; --ink-3:#7b8796;
+  --good:#12a679; --good-soft:#e3f7ef; --warn:#e8930c; --warn-soft:#fff3df; --bad:#df4146; --bad-soft:#fdeaea; --info:#3a7bff; --info-soft:#e8f0ff;
+  --f-ui:"Figtree",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:14px;line-height:1.45}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible,select:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.app{display:grid;grid-template-columns:232px 1fr;min-height:100%;background:linear-gradient(90deg,var(--navy) 232px,transparent 232px)}
+/* rail */
+.rail{background:var(--navy);color:#dfe8ef;display:flex;flex-direction:column;gap:4px;padding:18px 12px;position:sticky;top:0;height:100vh}
+.rail .brand{padding:6px 10px 18px}
+.rail .brand img{height:24px;display:block}
+.rail .ws{margin:0 4px 14px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.06);font-size:12px;color:#a9b8c6}
+.rail .ws b{display:block;color:#fff;font-size:14px}
+.nav{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;font-weight:600;color:#c3d0db;text-align:left;width:100%}
+.nav svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.nav:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav[aria-current="page"]{background:var(--sky);color:var(--navy)}
+.nav .new{margin-left:auto;font-size:10px;font-weight:800;letter-spacing:.6px;background:var(--ai);color:#fff;border-radius:6px;padding:2px 6px}
+.rail .foot{margin-top:auto;font-size:12px;color:#8fa1b2;padding:10px}
+.rail .foot a{color:var(--sky)}
+/* main */
+.main{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:12px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+.top h1{font-size:19px;font-weight:700;margin:0;text-wrap:balance}
+.top .crumb{color:var(--ink-3);font-size:13px}
+.top .sp{flex:1}
+.sel{appearance:none;border:1px solid var(--line);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237b8796' stroke-width='1.6' fill='none'/%3E%3C/svg%3E") no-repeat right 10px center;border-radius:8px;padding:8px 30px 8px 12px;font:600 13px var(--f-ui);color:var(--ink)}
+.btn{text-decoration:none;display:inline-flex;align-items:center;gap:8px;border-radius:8px;padding:9px 14px;font-weight:700;font-size:13px}
+.btn.pri{background:var(--teal);color:#fff}.btn.pri:hover{background:var(--teal-ink)}
+.btn.ghost{border:1px solid var(--line);background:var(--surface)}.btn.ghost:hover{border-color:var(--teal);color:var(--teal-ink)}
+.btn.ai{background:var(--ai);color:#fff}
+.sample{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--warn);background:var(--warn-soft);border-radius:6px;padding:4px 8px}
+.view{padding-block:22px 40px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));display:none;flex-direction:column;gap:18px}
+.view.on{display:flex}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;min-width:0}
+.ph{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.ph h2{font-size:15px;font-weight:700;margin:0}
+.ph .hint{color:var(--ink-3);font-size:12px}
+.ph .sp{flex:1}
+.grid{display:grid;gap:18px}
+.g-kpi{grid-template-columns:repeat(6,minmax(0,1fr))}
+.g-2{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
+.g-2e{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.kpi{padding:16px 18px}
+.kpi .l{font-size:12px;font-weight:700;color:var(--ink-2);display:flex;gap:6px;align-items:center}
+.kpi .v{font-size:30px;font-weight:800;letter-spacing:-.5px;margin-top:6px;font-variant-numeric:tabular-nums}
+.kpi .v small{font-size:14px;color:var(--ink-3);font-weight:600;margin-left:3px}
+.kpi .d{font-size:12px;font-weight:700;margin-top:2px}
+.up{color:var(--good)}.dn{color:var(--bad)}
+.kpi.hero{background:var(--navy);color:#fff;border-color:var(--navy)}
+.kpi.hero .l{color:var(--sky)}.kpi.hero .d{color:#c9d6e2;font-weight:500}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.p-good{background:var(--good-soft);color:#0b7d5a}.p-warn{background:var(--warn-soft);color:#a86400}.p-bad{background:var(--bad-soft);color:#b8282d}.p-info{background:var(--info-soft);color:#2459c9}.p-ai{background:var(--ai-soft);color:var(--ai)}.p-n{background:var(--line-2);color:var(--ink-2)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-3);font-weight:700;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--line-2);white-space:nowrap}
+tr.click{cursor:pointer}tr.click:hover td{background:#f7fafc}
+.hm td.c{text-align:center;font-weight:700;border:3px solid var(--surface);border-radius:8px;cursor:pointer;min-width:74px}
+.hm td.c:hover{outline:2px solid var(--navy)}
+.hm th.c{text-align:center}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--ink-2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.stage{display:grid;grid-template-columns:130px 1fr 54px 64px;gap:12px;align-items:center;padding:7px 0;font-weight:600}
+.track{height:10px;border-radius:5px;background:var(--line-2);overflow:hidden}.track>i{display:block;height:100%;border-radius:5px}
+.muted{color:var(--ink-3)}
+.small{font-size:12px}
+.mono{font-family:var(--f-mono);font-size:12px}
+svg text{font-family:var(--f-ui)}
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(20,28,40,.35);z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,100%);background:var(--surface);z-index:21;box-shadow:-20px 0 50px rgba(0,0,0,.18);overflow:auto;padding:22px 24px calc(22px + env(safe-area-inset-bottom,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+.drawer h3{margin:0 0 4px;font-size:19px}
+.x{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:16px;width:32px;height:32px;border-radius:8px;border:1px solid var(--line);font-size:18px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 18px;border-radius:10px;font-weight:600;z-index:30;box-shadow:0 12px 30px rgba(0,0,0,.25);max-width:calc(100% - 32px)}
+/* storefront */
+.browser{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;position:relative;min-height:560px}
+.bbar{display:flex;align-items:center;gap:8px;background:#eef2f6;padding:9px 12px}
+.bbar i{width:11px;height:11px;border-radius:50%}
+.url{flex:1;background:#fff;border-radius:7px;padding:5px 10px;font-size:12px;color:var(--ink-3);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shop-h{display:flex;align-items:center;gap:18px;padding:14px 20px;border-bottom:1px solid var(--line-2);flex-wrap:wrap}
+.shop-h .logo{font-weight:800;letter-spacing:3px;font-size:16px}
+.shop-h nav{display:flex;gap:16px;color:var(--ink-2);font-size:13px;flex-wrap:wrap}
+.shop-h nav button{font-weight:600}.shop-h nav button.on{color:var(--ink);text-decoration:underline;text-underline-offset:5px}
+.shop-b{padding:22px}
+.prod{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
+.img{border-radius:12px;aspect-ratio:4/5;max-width:100%}
+.sz{display:flex;gap:8px;margin:12px 0}.sz span{border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-weight:600}.sz span.on{border-color:var(--ink);background:var(--ink);color:#fff}
+.shop-btn{display:block;width:100%;background:var(--ink);color:#fff;border-radius:10px;padding:13px;font-weight:700;text-align:center}
+.shop-btn.alt{background:#fff;color:var(--ink);border:1px solid var(--ink)}
+.line{display:flex;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line-2)}
+.thumb{width:62px;height:74px;border-radius:8px;flex:none}
+.spot{position:absolute;right:16px;bottom:16px;width:min(360px,calc(100% - 32px));background:linear-gradient(160deg,#7b61ff,#5a3fe0);color:#fff;border-radius:14px;padding:18px;box-shadow:0 18px 40px rgba(70,40,200,.35);animation:rise .35s ease-out}
+.spot.center{left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);animation:none}
+@keyframes rise{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+.spot .q{font-size:16px;font-weight:700;line-height:1.3;margin:6px 0 12px}
+.spot .k{font-size:11px;font-weight:700;letter-spacing:1px;opacity:.85}
+.scale{display:flex;gap:5px}.scale button{flex:1;height:36px;border-radius:8px;background:rgba(255,255,255,.18);font-weight:700}.scale button:hover{background:#fff;color:var(--ai)}
+.opts{display:flex;flex-direction:column;gap:6px}.opts button{text-align:left;background:rgba(255,255,255,.14);border-radius:8px;padding:9px 12px;font-weight:600}.opts button:hover{background:#fff;color:var(--ai)}
+.spot .xx{position:absolute;right:10px;top:8px;color:#fff;opacity:.8;font-size:16px}
+.rule{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:12px 0;border-bottom:1px solid var(--line-2)}
+.rule b{font-size:13.5px}.rule .small{grid-column:1}
+.tg{width:38px;height:22px;border-radius:11px;background:var(--line);position:relative;grid-row:1/3;grid-column:2;align-self:center}
+.tg::after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .2s}
+.tg[aria-pressed="true"]{background:var(--teal)}.tg[aria-pressed="true"]::after{left:19px}
+.feed{display:flex;flex-direction:column;gap:10px;max-height:420px;overflow:auto}
+.fi{border:1px solid var(--line);border-radius:10px;padding:10px 12px;animation:rise .3s ease-out}
+.fi .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+/* echo */
+.chat{background:#f7f9fb;border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px;min-height:520px}
+.b{max-width:82%;padding:11px 14px;border-radius:14px;font-size:14px;line-height:1.45;animation:rise .3s ease-out}
+.b.ai{background:#fff;border:1px solid var(--line);border-top-left-radius:4px}
+.b.me{background:var(--navy);color:#fff;margin-left:auto;border-top-right-radius:4px}
+.b .st{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;display:block;margin-bottom:3px}
+.choices{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto;justify-content:flex-end}
+.choices button{border:1.5px solid var(--navy);border-radius:999px;padding:8px 14px;font-weight:700;background:#fff}
+.choices button:hover{background:var(--navy);color:#fff}
+.act{border:2px solid var(--warn);background:#fff;border-radius:12px;padding:12px 14px;animation:rise .3s ease-out}
+.echo-face{width:44px;height:44px;border-radius:12px;padding:3px;background:conic-gradient(from 200deg,#5ee0ee,#7b61ff,#e0479e,#f5a623,#5ee0ee);flex:none}
+.echo-face div{width:100%;height:100%;border-radius:9px;background:#0d1b24;display:flex;align-items:center;justify-content:center;gap:5px}
+.echo-face i{width:7px;height:11px;border-radius:4px;background:#fff}
+.kv{display:grid;grid-template-columns:120px 1fr;gap:8px 12px;font-size:13px}
+.kv dt{color:var(--ink-3);font-weight:600}.kv dd{margin:0;font-weight:600}
+/* tickets */
+.tabs{display:flex;gap:4px;background:var(--line-2);border-radius:9px;padding:3px;flex-wrap:wrap}
+.tabs button{padding:6px 12px;border-radius:7px;font-weight:700;font-size:12.5px;color:var(--ink-2)}
+.tabs button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.av{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--navy);flex:none}
+.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.node{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;font-weight:600;font-size:13px}
+.node small{display:block;color:var(--ink-3);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.arrow{color:var(--ink-3);font-weight:700}
+.wing{border:1.5px solid #b9a8ff;background:#fbfaff;border-radius:12px;padding:14px}
+textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;font:14px/1.5 var(--f-ui);color:var(--ink);resize:vertical;min-height:110px;background:#fff}
+/* cognivue */
+.theme-row{display:grid;grid-template-columns:minmax(140px,1.3fr) 70px minmax(120px,1.4fr) 80px 90px;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line-2);font-variant-numeric:tabular-nums}
+.sent{display:flex;height:10px;border-radius:5px;overflow:hidden}
+.ask{display:flex;gap:8px;flex-wrap:wrap}
+.ask button{border:1px solid #cfc4ff;background:var(--ai-soft);color:var(--ai);border-radius:999px;padding:7px 12px;font-weight:700;font-size:12.5px}
+.answer{border-left:3px solid var(--ai);padding:4px 0 4px 14px;margin-top:14px;line-height:1.6;min-height:40px}
+.alert{border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:12px 14px}
+/* reputation & integrations */
+.rv{border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.stars{color:#f0a500;letter-spacing:2px}
+.src{font-size:11px;font-weight:800;border-radius:6px;padding:3px 7px;color:#fff}
+.ig{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff}
+.ig .ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;flex:none}
+.ig .n{font-weight:700}.ig .s{font-size:12px;color:var(--ink-3)}
+.ig .tg{margin-left:auto;flex:none}
+.cat{font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-3);margin:6px 0 2px}
+.recipe{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px dashed #c6d3df;border-radius:12px;padding:12px 14px;background:#fbfdfe}
+@media (max-width:1180px){.g-kpi{grid-template-columns:repeat(3,minmax(0,1fr))}.g-2,.g-2e{grid-template-columns:minmax(0,1fr)}.g-3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:820px){
+  .app{grid-template-columns:minmax(0,1fr);background:none}
+  .rail{position:static;height:auto;flex-direction:row;overflow-x:auto;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));gap:6px}
+  .rail .brand{padding:6px 8px 6px 0;flex:none}.rail .ws,.rail .foot{display:none}
+  .nav{width:auto;flex:none;white-space:nowrap;padding:8px 10px}.nav .new{display:none}
+  .top,.view{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .g-kpi,.g-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .prod{grid-template-columns:minmax(0,1fr)}
+  .theme-row{grid-template-columns:minmax(0,1fr) 60px 80px}.theme-row .sent,.theme-row .tr{display:none}
+  .stage{grid-template-columns:100px 1fr 44px}.stage .dl{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<style>body{margin:0}</style></head><body>
+
+<div class="app">
+  <aside class="rail" aria-label="Main navigation">
+    <div class="brand"><img alt="SurveySparrow" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAc0AAABJCAYAAABfE31nAAAdXElEQVR42u2deZwVxbXHfwPDOiwBBgHXRwTUaNRE0Rg3iBsqPA0+SFwwEowmPIkSFUWjiRqfC0IAyQNRMS7xqbgiGkXcMOCCESOiBAYh7OCwy7DNUO+POjc0TZ3qql7uvTOc7+fTn7nT3VVdXVVdp5ZzTpUopVDEHAHgRAB9ALSj/3PsBDAdwBIAYwDMAbARgiAIgpARJUUqNAeRoDzZM9wjAAYD2CBFKwiCINR1odkVwPMA9k8YzygA10jxCoIgCHVRaDYAMJxGmGnxNYBzAcyUYhYEQRDqitBsBKAihdElx2AAI6WoBUEQhNouNFsBmAXgoIyfcymAx6W4BUEQhNosNCsAHOx47ywAnwJYBaA5gMMBHAugmWP47wL4XIpcEARBiEtpAZ99lYPAXA9gGID/sdxTDmAIgOsj4vobgAsAbIY2V1kHYA2AtVINBEEQhGIfaVYCaGO5fp+DIAzSGMA8AAfESMtvAPxRqoMgCIJgo14Bn11OAu7nAN4OXTvHU2ACwFYABwL4h0eYFQB+LQJTEARBKPaR5r/TAEABKIN2ZrA/gIcSxrkIbspFMsIUBEEQYgvNcmiN1jYAOpJAM41GdwL4in4vhF573JZSmloiuUefbwNYEHHPlQDGSxUQBEEQ4gjNfwLokiCuHQA+AzAfwIcAPgawmI5C8CCAy5lr10OvmQqCIAiCt9BsCq1VmhXvQ2uvPkWCtToP79aCGbHeBuD3UvSCIAhCXKH5AxJs+eJtAI8CeB3Ayoyf0y3w/0AAY6XYBUEQhDjk1ivPzvNzuwP4M7T26mpoW8xmGTznb4HfvxSBKQiCIKQhNE8sYBraArgOwCYAI6CVjw5MKe6P6e9NAB6Q4hYEQRCSkJueXYLsHKbH4SnoHU8qE8ZzAYBDYPcoJAiCIAheQrMYd6JeDaA3gOkJheZzUsyCIAhCGtQr4rTtA70m+euY4W8G8CyAo6WYBUEQhLRGmlmbm6SBr+eeQQBG0++3AfyoCN6hFMB3AFwG7USiO7QTiSbQjuOXQjuKmARgCoBlUj2FAnMq9EbubQB0AlCTazewyx57KoB/SVYJe5PQBIpzejau4ByKPdcwC7ktWAmAW6DtQ32YBeBWAJOlmgp5pCu0HfM5HmE2A7gCwJOSfYIIzeKiM/QenBzXQZuvhCnUaLMXjRyT8BCAa2rBbIBQy9sCAHcBuCFBHCtoRFol2SnUdaFZbNqzJkYAuNZyvRv23C0lyD4Avs5jem+NMbrk+BraF7AITiELSgF8QZ3SNOgLYKJkq1AXySkCrSrydI6LEJgA8G7E9Z/kMb39UxSYgLZlnS/VVciImSkKTAB4BsD5kq1CXRaarxRxGu8D8CuH+1RE7/bmPKW3FYAJluubAQwGcDr09mVdAHyP0rfcEq6D9N6FDLgJdg3zb+ies6CVgnoBuBNacc3GC/QtCEKdIjc9e06RCs4HoRUMXDkMepqJIx9TtI9Aa8iauB/RJjRBzV8ThwCYJ1VXSIEyEooc/aHdXXKcB+DFFL9fQag1I80pRZi2YZYPrhXMm0x/Cb3XJ8d/5iHdnMCcADeb0/sBXG25frlUWyElfmq5dnGEwASAl6B1Ibi19l9IFgt1VWhWA3izyEaYQ5hrLaH3/vyzRdhyZO2Y/gjLtQEe8YwG8A5z7VdSbYWUuJg5/xzczUeWAbi9gN+cIBREaOZ6jcXAPZYRZkvotZS22H3LryA2u8bzM077scz5zdCq+D6MZ843g94rVBCSckqMb8jEvZZrP5BsFuqq0Iy7bdZoEhZnQdtpJWEcgBuZa+UAFmD3LcR6Gu6z+aqtD22PlhWc4sNMAFs947J1YjpK1RVSoD5zPo6/Z04nonuMtigNGlBbURI46iolBQq7N1JaGvinmoTWLz0iGIbdp1H3hXatdVyMxPwR2usPJ4wWQSsuBOlt6BUraGfv+1iEb1bKQNXM+e8CaOoZVxW0Zm3DQOOWK69idLFXBn870i7U4ToAwAeINhsqBvajzlp9aBeIpQCaQ9sIL4NW0toZEAQKtcd5SI428DdxuhlaCa4J1d0yev+ljuF3Mg26CtT9TgCOpLir6DuuoroTZkeK+XE4lXF7+o6X0bf+Ueg5pZY2IClHUDoOgnbw8gLVweqY9asRgKMAHE9l9jK0TohNuKpQO9qV6koNdrlWnO0xQGgEYFst+zaqoZQKHg2UH0eGwueOjz3jGcvEA6VUa6XUKibcHCbMC5ZnnWR5VtKjn+W5yPhYp5Rao5SqpGONUqpKKdU0ZnzTKN9XKaWW099KpVQ75v6JSqnVSql5SqllSqnFTLk2VkrdqZSqDuXPqMA9s+l5ywLPXq6UOiFB/txAebJGKbWejgql1GMOYQ9VSt1B+RmmOvR3IcXZOSLOS+j5q5RSS+hYTkca9WEhlUelUmoF1Y9lofq/nqmrN+Whvl6plJqqlPqE6trrSqnxhvv2V0qNdmhDXldK9U4xfT9RSk235FGO2UqpcUqplh5xD6N4v6FyWaeUesNwXzOl1FDDMz+g6/UC926h+JRSahuV+eWGODvTe4XpY0lvCf39Pr3r8og8WU7ffplDXvQPtFm5+r9YKTXEIz/PDIRdQcdiqu/3esTzffoe14SOyYF7Sk0B7/YQdsdZEuAiOJcrpYZHCMxtlvBbmHAjLWF6Z9gQHGl57i0ZN0IcbRMIYROHMvd/aLh3leED4TpAQaF5F3PPuwk7FSauigh3nYrPbTHLbFDCunCRJe5g4z6XuWd1qEHO4njKoXN5V4w8X6eU6pFQWG6PWd6PkKCLesYzDu9+oeU5M0PCjKtL4Q7hnZY4+1rS214pNSNmnjxMHZ/w4Cz3+wwmXKVHmY21PL/GIx4uf4YrpfbL3WdaR/jAY6h6j+XasTRUj1q34zz9tAYwh6YnORozc/LLI6bXsuIzy7XboR1h55tNMcNtt0wbm6gxnGsS+D0C2uxmH4fnPcHcc0rMdzmUpuzD/BO8lmhHAHNh18aO4lZaruDW6/7KnL8lYZn/yaIzsCHw/1PMfW1pqq40w3pZZfmmAeA18PoNNr5F+XqtZ7h6tDzwFK2HxuEymo4+KOK+NRHrutfArr28IbAUZaMmsHTyLrSTCo71zPnzAHwF4ISYefJzaJ2OU5mp8zcsSwSu/CyiXLs6xnM8c/7e4JKY6WP20fLsBuBhy/UjLYLzRvDmE60BLKY1hLQ5MGMhZfvQf0eZf+FesmjenP7eAO0FyUawoZoDYCVz3yUx0nE1rZ+G+QjAWkZgzoB2JOG7DhfmOGjfziYB9GuL0DoqZp4fQ4LDRLjRHB2x3rwDWpM9n559DgcwDVqxMAn3WToPJv6eoFMWpCWAT2LoMADa5nUQ/LZBjKoLru/WnFmnfjHU+Y1De2gTuj6eg68oc6VGtNYblb5zQ2uzHKcZzv0LITezJqFZP0ZPYozl+lEGwfkbS0Y1o0azLEEh1Viu1c/4o78nYqS7L/Ui11G+fT/j9NTEDNcwpecPBXC3w31hATQyRq+Sozdz/kHDuXIaqdg6bPOh7YSvpYblOcvIPFfmJu3SCvCORUbHzG9Ome4BqnNB1mLPbfRM4dbS6D8fOwW9CuBky/VFcFcuGgg395ljYXcluJrSdR+N1mfArmjUGlpRx/ebPMOx3F1Hwo1plHSIw71bQv+fD+APDuGWUHm4KP88w4zCH3cQdia2wW0LuzMCv5Wls8aleXcM87oXOM5V14T+HxMxX/wZ3XeF5Z5mDgvvYUoM8Vxruf+aPCg5lEesxYZZQPPyh2awptkg5TXAA5n7ZzjWkyAL6d2XMconHKUe73EME8cq5n6bksM0io971tER4X9mCNMnReWxlpa4OlqUPJZ41NVNpPdwasJvZILj86qVUjcrpQ4zxLGf47rnUZZ0nGapq1WkAGZbO66yPPc0JtyYGGuDVQHFuHc9vhUVoRNSSd/6MSFlvS2WcEuUUpcZ0tCAlHIqLGE3hhSESqkObjLcu8yhHn3o+K6NI+Lh6tEeyoemwL0TKD4Mj0hYT8u1FqT15IuvMtOVeRCauQ7AKocGgVs8b6zSEZpxFToqmfg6eQrNMM9atK7Dx9sxlXeCx4MOike547yUlHPGeColcB2UgZ5l9ggTzxsGZQwfjXOORZSPR2UkND921MCsR5r0KoZSySSLYGjv8OwWAa3VMOMTCs33SPCWJPj+g2xXSt1K5WXTqn/XEsd4hzallVLqJUscz3sIv3LLcxoxYd4ynLsgIs3LXOWLKfC3VTKGx/iAWsQYYdq0ZydZwvwkT0Iz14sanyAvH6OKUReE5mpS6fZJA9eBm+oRxxomjhYewuuGGPk3k4nLZAYwJIXRZj3qxZvo6RjH5Zb8imIemdGkJTTjaEq/Z4lvsDKbPynXEYblGGzpFMcVmsel1GkOdkA6OMRzgiWOsZ5psgnfcMd5IDOYsAm7HxninUOzA2EmxBC+k1yFZolKzmiPjG0Vc4TJ9VhAPWuOk/IoNIOFMj5hfpbG/GhQBEKz0nHE4PNeLr3vkywNiGlq1cQXMdPdiYnvn57v2c3xeed5Po872lInoTJmXV3k2FF71BLHGkfTDZ98/CZiajbIrBSf2yGG0OyY4vMVdQZd43nB8g372nw3taRphONg7QnLgOQxw/130FS+awcG9I25LqcYFYEUkrvDG+S4oN2KFpLjaslWMOdPsoTZWAAt0m2khVgCvR/hYzHyc25C5ahCciX8vQXl4BRV/tshbH/mvEnJqI9FmSRu3ZxnUHDqArPZ09+YeK53fB7nBtN3a66vSZmtnLQXffdwPYgUXZJsLHAJ7FuW2eB2MiozaCR/AaAf9Ab1wSOOhvbfmfPHe8bzFwALU/7+OjjeVw7eP/cg8GZCHFWkOe/ybS5k8vBMJnw1o+D3KrS51GaDAihnNnM6o6z1qvFuRvLeptJhdITSwoqE8ZtGPe1jrIEW4iinqeLnHd+1hkYNDWrZSHNjwnziHEZUJOh9+0ztlSZI+3Amzn6Ge0+0pPfQmHm0XKXnpOASj7qa44qY07ONE6b1mxjpSXr8hXmmydHCKMu7x1Xc45joEUfXDNoRW3t8ROjeoR5LKZ0jlutGeiyzVPrM0HDGy09AG2YnZRBjj9aS7F9aJoh7ATPS/LElTDFt3lwJ4Gk6AG1EPBzAwZYwXaB9RPaoRaPMZxOG/4xMePYNnT8Y2g6YcyjBjRw5o/HvWka6ZSFzJc5kQNFsQg2Zc53O3Gf67qZD2yeewtTpuyx5xJnnvAQ3W1IXnsAupxM9aQQcZfv3AICp0MbxUeZGuVmvN+G/uUGYp6FN4UyjYFcaU504IBCuPmOOVQXgsBTyeDbS9ZmbqwOucDN07yd4/koqz8aGa+0AfB74/xVmZqkP9vQHcEaEeciL2HNf4h4wmzq28Wq3EmpjuTIhNMJKOsKsVrwquE0ZYEwRjTRta1NzI96/fy0aaQ5IIU8GMXHb/Eq+woTpmof6HgWniTvAovXIvWeZ5TktMq6r+1k0dnMscFjTrI6o275HXyYtMyLCNaay8XUZZzOr6uGxpvlEgnfm2M8jDm6d+e6E5fEpE6/J/G8RoxDpouzZy0E3p4HjeiartWvbjmdwir2d/tDeOVrS6DCpp5/6MLsaaxGxnvlGLRiZvQTt9u1xyz2/q0UjzQUpxHG/53pfS8boeSm0Sy/T2no+4WZ4HobZ7WEDABcxYbi9LMflYf1+GX3bV1vu+TbNCER9zzk2pJCuLcx52yxOX1pHHQ1/l3FpbWs2J491zQS3jrwqYRpmMmVikgPPY09HIf0M+d3LEPbt0KzPm4Z7wrN0pu9qA80Eehf2yBSndgCtULE+4ZRsjgnM+R9GhHu9FgmbS8G7IDyogOmqV6DnfmhplMNwyiCcl5Z8b09k8+hyG3P+ciYeTlHp9jy+z2gAv7VcNykFNcyogQ4L4SCcC7W7aEq3fp7yi3v37Rk8a3lK9TIJCmZXdw2YqWBT/rQO/Dbt0TrNIPQfNdwXds94quGeKUl6If2gtbmKDW6EYfM1+SKSr5XkmwvAr8MeDeDTDJ+9vcjyYhizztDfMOtwKRPHPZ7P3AqtldrQsdHLEeW68CPLteHQ7trCdMeea7jc2vY7SK4B78udJKhNnapjPeLpinibYAfhNLVN++gOBe8vuobqwCfUIK+kmYBmhsb/x4bztQ1OHrROGC/nxq+SaadNnINda+om7ebXDOdMm49cBuAq+t0KZp/UjycRmk9SL/GkIirYgTA72T6bGXXkGJNxum6F9vu5hRqOJjRSn4x4KuyAfSPgrEd8HYrsg34OWkki3Du9JiQ0G8OsgDML/ObdVZYe8m8K8K5PQ5s+hBkV6mWPY8KPjIi/PfQywCZoR92K6m1z6M0E5sdM9wRmRNzRo+05JIX84/w5fxH6vyl4k6ZNVPYPOT5zNrTz8NoMN8rvnDDeFsx5085DO6CnWcOjyXMDQtOkgDaOaT/XhoR+GbSf2TnMiHU7gLeQsOE9q4hGaK+Ct0d7wBJuC8zz22nSDnrquT309lfN6f+eGT0vS0fvbYv0ozY1cM2wu+Yi51Q8ao3etF1TkwK9J7c1WLfA7z7YU6MY0FrpLhqTx0Hv6nActC1hN+hdMQ5OkG5uW8G1HnGk8b2c7NhI2xySt/EQmEA62rOFZoZnfrpyNHP+Y+b8y4ZzvQLtXnhwtBR7bkaQwzRFe4llpmY2ImzKXYRmFeJvU5QmS8Ab3p4DrRrOMTYP6eMajJYZPe/z0P+bU2yEuhfpR80tFQSn67n9L9+NiJtb7+xXgPecD97ZQW5q6Urm+s8d4l9puXZOgnSXM+d9BPH+JMh9qRfoRHG7Y4R3mrmYue9++Jl+XIj8rYdmCTfC2jfBaPN8y7V/MOdfNJwro46JaZQ52fKMZ5iBINc2Pu9a0aKYB36dKF8C80CmIjcC730ot7Z0Yx7S+A/LtesyGPEtdazwvWM8d1SRftTzmQb/Ymglj2YAvmO4Ps4h7leY8/fGTOupAP4vcDxGvV5XDz1/tKSnFPzef28lrK+DEpQPt3b5iWc8d8d4dk5p0bZuHfbwso/HSMfGL1E3sI2wfh8zTm60/ldLmIWW2ZGeHt9uTnaF+R70zGAHRyEbS2gCenG0EIJzQURPdYLlen0aeezIQzo/s1wbhniaabd7CE3OgLy/52h3IOwmQTsL/GGbhFhD6j1yji2ecoj3RZhV7ttDO+fw2VS4EfR+mz8NHP3o+1njGMcLTCPWxDJqnuSRxj9brsUxN2sH4L+Ya+/FmOm4IkYafgVem3iCRzyuZhoNoKf6TkHd4Sbm/EWINh0y1aM2zLWRMTru1zCdRdtIcy3TCZrMDM4qIt8qhqFqF3IxlA+mxzR6D7pVqpdHxwS23SqWkXN617gGWOIybTnUy3L/VOW2zdExMV0X2pwbdMsgn028oZSandDBwxWW9+6Xgvs8X2cTV3l+L6UqPSffvTzjmmeJq53h/okO7+OzNVqfiLhMaVjH3Ou6U1NbFb07k8m5Abd5w7UZODeI45Zvi8WJw/4plMeSlNoipfSWYkm+6yB/cnm3uAXUWMXbf8+H38f0+uHieSWrI2qHmAWK35g2eNwS03+uzTPJM7STABd2aAJ/v/kWmtNS8n9s2kR3Y0RnpV6EP2GbR6o+Ke9eEfc9c8cfUvh+GiilPrDEMZMJN9HxvR5T9j0VofQekTZGKb/9WpWK3ne3vVJqsUP6TUJzbJELzUsiBiJRXpvuiMiTvg5paKSU2uaQvxcm3G0lyIku+VOilEoylD+Npm3TNE94GdqWxqZx1xe7fLZyLIJZ1T1rekObR9hYD22M+xGt05UA6ASthBHloOFm8GrygwGMiAj/IbSTh+001XcwTR+G4fxFdmamMGbA7EmlO7TdYJr0iFgTCXKAYSrbxlGItn99Ftq71AaaGm4KrZjzPUuYdxBPwWqs45pZw5jLEOsAfMty/V807fsZdimfldK39QtEa1Y2Z6a9J1qmc7kp3pnQZiM1VA+7I9p7z+fQtp9bY3yrD9C0/RJqT5pAe+u6lN7dhbOxpw0hV6bXQdvpxkGlXC/eAO87GdCayJOpPdlA07Bdqe228Vtom14XpjLTsUEaw805yVxEmzOVuOV0Oj3/nsq+c3oUW5RSr0WMhKL2DQxTpgrnP3aoyoZZDs9enMJz7lW7bwobpEsRjDRtO1kEfYGuiBn3FSmX2zrlvpm46z6fQd5OkI+dIvIyCx+7tpHm5JTz3bYkUmqZXq12PJdrvy5nrp3tMT07pEhGmrl9jlcVoP0KHj+LiM9nr9uo2bvXXONKy0B+MrTBaAmNWibRaMrGfNIQ7E49uB6I3g1hAHiPEUF+gfj7N6bBXZYF9bhMihjJBEdKSfgIwBDwZgn1UBzc4aDg1jdm3OPBm3T4sAl6b7/OiO+q71NoT1ezYyhvuFBBI80lKSt9XQbeZ7CNR8HvweijnLYZWpN6nSVcNXjzlPqO5wDtuWsiipO4U4nroO0hV6eUjscd268gT0eUuY8v8ajycd7jOIsG8Gnoba5akRDtQJX3MPrbnM53gfa44Tp1Nx5uxsY3wM8oOUvB2RBm110+fANte3eeR2VvDXctzSBPYtemues9GpOcJmE+cdEUfS9B/OOhtY5XJohjGNX5yoTvehVNy3PLEO8njL8a2pvNhBTah0X0rT+aoL7fiz23E/RpxyZB24y6uBKcTlOAX8foJGyF1tp+FWZH+9yUX6mH8E9KEvvRzdBa0XcniGMrDWIujRn2c0uZD/OIa27E9SmFFJphVlJvey799d2R/Ujq7bisITyC+HZ1WbAD2hbsBLiZPQTZQKOd5vRevr3E9tDq9y7C82UA/4Hdd6tY4ikcuR5pVv44v4wQaFNTeMZG6vSd5fNR0WzI/oheX/bhYcvsC1J61wHw94STYxbV144ODZQL90PPQJnsVbdb0tCNOpg+XszeotmAEYj2G5zjTfo2pwQEnumZDQvcBjVKIY6hVBb/6xFmPfTmA2UJBzF/tbQ3Sz3j4rzGLffp2MZVBDoa2gB1Q4aFfTi0Lc/pjvf/HX6OoQvFSdBKP52ogWlHUygV0MpPX0Er6ixN8ZnHADiTGpQ2ABZT52UatOH5J6idlEIr+uRGxTWB0UoWvfa20FNMvWkUWk4N5xx63kvQSh/VKT+3FzOyXgGzK700KKF3PZtGoa2gp+u+Re+3BNoN2lJoxShff7WcItAF2NMrS1No94gDKL87UTq+gnbSMIW+/zQ2mW9AnaS+0Ioj+1AHdCO0168voKfyvjSE7UT5tJ3u34r8O87PmjLoJbXjAfyA2q9yeuf3qR2bimgPXLWWOELzJmjtp2+g11r+EGP0GDWy/BP8nMRPoymWaghC3WM1zN6hBiH7jQiy4hlo/7lhfgw3vQVBKAi+07ODsEtduBn0+uEmElo9E0wFdKJ4t1DP0UdgjoJ2WSYCU6iLHAneneJDtfi9uCnWKilyoZjx2dX7OvALrydjl73WGmjlng+g19YqSLDuxK6dP8oBnAitJPHDBOkfiPw4YxeEQsHV7xGoffvDBuGmz5UUuVDMuE7PDgLvFL0QrID291ghRSjUYZqCN50qqeXv9gjMhvBnws+UQBDyisv07C1FJjBvhFZ+EIEp1HU4O8cpkjWCUBiipmcHw77TRj55FdrL/XwpNmEvoCX4vTGvrgPvx9kP7pSiF2rrSHMI0rUzi8sL0DZv54rAFPYiRjLnFyEdO0hBEFIcaQ6GfTPXrNkBbRj7nDQQwl5IU/COrwfU8XevL8Uv1LaR5lDHEeYkaD+n3aEX9ZM6OpgH4HoaVTaENkERgSnsjfRgzi+F9l4jCEKRjDRvgX0NcxOA+6ANk4MC7R3o9Zd20DaXR0CblJRD25iVQ2v7KWjvLRXQBtsfQHv1mC5FIQj/hjMzGVqH3pHbrqpGil+oLUKzHvTeaL+DVkLICbkvSch9hGjD41V0TAfv508QBJ6LoF23mXhyL3h/sdMUipqkm1ALgpAuXQEcSL+DXnPWom7NyHTDLl/RufdsCD2LtViqgVCs/D/ZIIMbbvQkmQAAAABJRU5ErkJggg=="></div>
+    <div class="ws">Workspace<b>Kestrel &amp; Co. · UK Retail</b></div>
+    <button class="nav" data-v="dash" aria-current="page"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Executive Dashboard</button>
+    <button class="nav" data-v="store"><svg viewBox="0 0 24 24"><path d="M4 9l1.5-5h13L20 9M4 9h16v11H4zM9 20v-6h6v6"/></svg>Storefront SpotChecks</button>
+    <button class="nav" data-v="echo"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M9 10h.01M15 10h.01"/></svg>Echo AI Agent<span class="new">AI</span></button>
+    <button class="nav" data-v="tix"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v3a2 2 0 000 4v3a2 2 0 01-2 2H5a2 2 0 01-2-2v-3a2 2 0 000-4z"/><path d="M14 5v14"/></svg>Tickets</button>
+    <button class="nav" data-v="cog"><svg viewBox="0 0 24 24"><path d="M4 6h10M4 12h16M4 18h7"/><path d="M19 3l1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/></svg>CogniVue<span class="new">AI</span></button>
+    <button class="nav" data-v="rep"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6L3.3 9.2l6.1-.6z"/></svg>Reputation</button>
+    <button class="nav" data-v="int"><svg viewBox="0 0 24 24"><path d="M8 3v5a4 4 0 008 0V3M10 3v3M14 3v3M12 12v9"/></svg>Integrations</button>
+    <div class="foot">Sample data for a fictional retailer.<br><a href="https://calendly.com/kaushik-natarajan-ontv/surveysparrow-demo-engage-customer-event" target="_blank" rel="noopener">Book a full demo →</a></div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <div><div class="crumb" id="crumb">Kestrel &amp; Co. / Insights</div><h1 id="title">Retail CX Executive Dashboard</h1></div>
+      <span class="sample">Sample data</span>
+      <div class="sp"></div>
+      <label class="small muted" for="region">Locations</label>
+      <select class="sel" id="region">
+        <option value="all">All locations (12)</option><option value="London">London</option><option value="North">North</option><option value="Midlands">Midlands</option><option value="Scotland">Scotland</option><option value="South West">South West</option><option value="Online">Online (web &amp; app)</option>
+      </select>
+      <select class="sel" id="range" aria-label="Date range"><option>Last 30 days</option><option>Last 90 days</option><option>Quarter to date</option></select>
+      <a class="btn pri" href="https://calendly.com/kaushik-natarajan-ontv/surveysparrow-demo-engage-customer-event" target="_blank" rel="noopener">Book a demo</a>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section class="view on" id="v-dash">
+      <div class="grid g-kpi" id="kpis"></div>
+      <div class="grid g-2">
+        <div class="panel"><div class="ph"><h2>NPS trend</h2><span class="hint">weekly · promoters vs detractors</span><div class="sp"></div><div class="legend"><span><i style="background:var(--teal)"></i>NPS</span><span><i style="background:var(--good-soft);border:1px solid var(--good)"></i>Promoters %</span><span><i style="background:var(--bad-soft);border:1px solid var(--bad)"></i>Detractors %</span></div></div><div id="trend"></div></div>
+        <div class="panel"><div class="ph"><h2>Shopper journey scores</h2><span class="hint">score vs target</span></div><div id="stages"></div></div>
+      </div>
+      <div class="panel"><div class="ph"><h2>Store heat map</h2><span class="hint">Click any cell to open that store</span><div class="sp"></div><div class="legend"><span><i style="background:#7fd9b4"></i>Strong</span><span><i style="background:#d2f2e4"></i>Good</span><span><i style="background:#ffe5bd"></i>Watch</span><span><i style="background:#ffc9c9"></i>Poor</span><span><i style="background:#f58e8e"></i>Critical</span></div></div><div class="tw"><table class="hm" id="hm"></table></div></div>
+      <div class="grid g-3">
+        <div class="panel"><div class="ph"><h2>Promoters spend more</h2></div><div id="loyal"></div></div>
+        <div class="panel"><div class="ph"><h2>Responses by channel</h2></div><div id="channels"></div></div>
+        <div class="panel"><div class="ph"><h2>Top CogniVue themes</h2><div class="sp"></div><button class="btn ghost" data-go="cog">Open CogniVue</button></div><div id="mini-themes"></div></div>
+      </div>
+    </section>
+
+    <!-- STOREFRONT -->
+    <section class="view" id="v-store">
+      <div class="grid g-2">
+        <div class="panel" style="padding:14px">
+          <div class="ph" style="margin-bottom:10px"><h2>Live storefront</h2><span class="hint">Shop the site. SpotChecks fire on the rules at right.</span></div>
+          <div class="browser" id="browser">
+            <div class="bbar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><div class="url" id="url">kestrelandco.com/linen-overshirt</div></div>
+            <div class="shop-h"><span class="logo">KESTREL &amp; CO.</span><nav id="shopnav"><button data-p="pdp" class="on">Product</button><button data-p="search">Search</button><button data-p="cart">Bag</button><button data-p="checkout">Checkout</button><button data-p="done">Order placed</button></nav></div>
+            <div class="shop-b" id="shop"></div>
+          </div>
+        </div>
+        <div class="grid" style="align-content:start">
+          <div class="panel"><div class="ph"><h2>SpotCheck rules</h2><span class="hint">Behaviour-triggered micro-surveys</span></div><div id="rules"></div></div>
+          <div class="panel"><div class="ph"><h2>Live responses</h2><div class="sp"></div><span class="pill p-good" id="fcount">0 today</span></div><div class="feed" id="feed"><p class="muted small" style="margin:0">Responses from the storefront land here with page, bag value and customer tier attached.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ECHO -->
+    <section class="view" id="v-echo">
+      <div class="grid g-2">
+        <div class="panel">
+          <div class="ph"><div class="echo-face"><div><i></i><i></i></div></div><div><h2>Echo · Post-delivery check-in</h2><div class="hint">Sent on WhatsApp 24h after Shopify marks the order delivered</div></div><div class="sp"></div><button class="btn ghost" id="echo-reset">Restart</button></div>
+          <div class="chat" id="chat"></div>
+        </div>
+        <div class="grid" style="align-content:start">
+          <div class="panel"><div class="ph"><h2>What Echo understood</h2><span class="pill p-ai">Live</span></div><dl class="kv" id="echo-kv"></dl></div>
+          <div class="panel"><div class="ph"><h2>How Echo works</h2></div>
+            <div class="grid" style="gap:10px">
+              <div class="alert" style="--c:#2bb3c0"><b>Ask</b><div class="small muted">Natural conversation instead of a form. Higher completion on mobile.</div></div>
+              <div class="alert" style="--c:#d6338a"><b>Clarify</b><div class="small muted">Follows up on vague answers so "box was crushed" becomes a usable product-damage record.</div></div>
+              <div class="alert" style="--c:#e8930c"><b>Act</b><div class="small muted">Creates the ticket, routes it and tells the shopper what happens next.</div></div>
+            </div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TICKETS -->
+    <section class="view" id="v-tix">
+      <div class="grid g-kpi" id="tkpis"></div>
+      <div class="panel">
+        <div class="ph"><h2>Close-the-loop queue</h2><div class="sp"></div><div class="tabs" id="ttabs"><button aria-pressed="true" data-s="Open">Open</button><button aria-pressed="false" data-s="Pending">Pending</button><button aria-pressed="false" data-s="Resolved">Resolved</button><button aria-pressed="false" data-s="All">All</button></div></div>
+        <div class="tw"><table id="ttable"></table></div>
+      </div>
+      <div class="panel"><div class="ph"><h2>Workflow: detractor recovery</h2><span class="pill p-good">Active</span><span class="hint">Runs on every response</span></div>
+        <div class="flow">
+          <div class="node"><small>When</small>NPS ≤ 6 or CSAT ≤ 2</div><span class="arrow">→</span>
+          <div class="node"><small>Enrich</small>Order + tier from Shopify</div><span class="arrow">→</span>
+          <div class="node"><small>Create</small>Ticket · SLA 24h (Gold 4h)</div><span class="arrow">→</span>
+          <div class="node"><small>Assign</small>Store manager by location</div><span class="arrow">→</span>
+          <div class="node"><small>Notify</small>Slack #store-ops</div><span class="arrow">→</span>
+          <div class="node"><small>Sync</small>Zendesk + Salesforce</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COGNIVUE -->
+    <section class="view" id="v-cog">
+      <div class="panel" style="background:linear-gradient(120deg,#f6f3ff,#eef9fc);border-color:#ddd5ff">
+        <div class="ph"><h2>Ask CogniVue</h2><span class="pill p-ai">AI analyst</span><span class="hint">Questions about 16,590 responses and 3,410 reviews</span></div>
+        <div class="ask" id="ask"></div>
+        <div class="answer" id="answer"><span class="muted">Pick a question to see CogniVue answer from the feedback data.</span></div>
+      </div>
+      <div class="grid g-2">
+        <div class="panel"><div class="ph"><h2>Themes</h2><span class="hint">mentions · sentiment · impact on NPS</span></div>
+          <div class="theme-row small muted" style="font-weight:700;text-transform:uppercase;letter-spacing:.5px"><span>Theme</span><span>Mentions</span><span class="sent" style="height:auto;background:none">Sentiment</span><span>NPS impact</span><span class="tr">30-day trend</span></div>
+          <div id="themes"></div></div>
+        <div class="panel"><div class="ph"><h2>Key driver analysis</h2><span class="hint">what to fix first</span></div><div id="quad"></div></div>
+      </div>
+      <div class="grid g-3" id="alerts"></div>
+    </section>
+
+    <!-- REPUTATION -->
+    <section class="view" id="v-rep">
+      <div class="grid g-kpi" id="rkpis"></div>
+      <div class="grid g-2">
+        <div class="panel"><div class="ph"><h2>Review inbox</h2><span class="hint">Google · Trustpilot · App Store · Facebook</span></div><div class="grid" id="reviews" style="gap:12px"></div></div>
+        <div class="grid" style="align-content:start">
+          <div class="panel"><div class="ph"><h2>Rating by store</h2></div><div id="rstores"></div></div>
+          <div class="panel"><div class="ph"><h2>Review boost</h2><span class="pill p-good">On</span></div><p class="small" style="margin:0 0 10px">Promoters (NPS 9–10) get a review invite for their store's Google listing 2 hours after they respond. Detractors go to the recovery workflow first.</p><div class="flow"><div class="node"><small>Respond</small>NPS 9–10</div><span class="arrow">→</span><div class="node"><small>Invite</small>Google review link</div><span class="arrow">→</span><div class="node"><small>Result</small><span class="up">+214 reviews / 30d</span></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTEGRATIONS -->
+    <section class="view" id="v-int">
+      <div class="panel"><div class="ph"><h2>Retail recipes</h2><span class="hint">Ready-made flows for retail teams</span></div><div class="grid g-2e" id="recipes" style="gap:12px"></div></div>
+      <div class="panel"><div class="ph"><h2>Connected apps</h2><div class="sp"></div><span class="hint" id="icount"></span></div><div id="ints"></div></div>
+    </section>
+  </div>
+</div>
+<div id="layer"></div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+/* ---------- data ---------- */
+const COLS=["NPS","Checkout CSAT","Staff","Stock","Fitting rooms","Returns CES","Click & Collect"];
+const STORES=[
+ {n:"London Oxford St",r:"London",resp:2140,nps:68,m:[68,4.6,72,48,51,5.6,62],mgr:"Hannah Cole",g:4.7},
+ {n:"London Covent Garden",r:"London",resp:1650,nps:61,m:[61,4.5,70,55,58,5.4,59],mgr:"Leo Grant",g:4.6},
+ {n:"Westfield Stratford",r:"London",resp:1480,nps:44,m:[44,4.3,58,39,29,4.6,41],mgr:"Maya Osei",g:4.4},
+ {n:"Manchester Arndale",r:"North",resp:1320,nps:18,m:[18,3.9,41,22,35,2.9,24],mgr:"Aisha Rahman",g:3.9},
+ {n:"Leeds Trinity",r:"North",resp:980,nps:31,m:[31,4.1,49,36,40,4.0,12],mgr:"Owen Price",g:4.2},
+ {n:"Liverpool ONE",r:"North",resp:870,nps:39,m:[39,4.2,55,41,44,4.4,38],mgr:"Sophie Hart",g:4.3},
+ {n:"Birmingham Bullring",r:"Midlands",resp:1190,nps:27,m:[27,4.0,52,15,33,3.8,9],mgr:"Raj Malhotra",g:4.1},
+ {n:"Nottingham Victoria",r:"Midlands",resp:640,nps:42,m:[42,4.3,60,44,47,4.7,45],mgr:"Ella Brooks",g:4.4},
+ {n:"Bristol Cabot Circus",r:"South West",resp:720,nps:61,m:[61,4.5,69,52,55,5.3,57],mgr:"Tom Fisher",g:4.6},
+ {n:"Glasgow Buchanan St",r:"Scotland",resp:910,nps:64,m:[64,4.6,70,51,60,5.5,61],mgr:"Callum Reid",g:4.7},
+ {n:"Edinburgh Princes St",r:"Scotland",resp:690,nps:59,m:[59,4.5,66,49,53,5.2,55],mgr:"Isla Murray",g:4.6},
+ {n:"Online · web & app",r:"Online",resp:4000,nps:24,m:[24,4.0,null,30,null,3.6,null],mgr:"Priya Nair (eCom)",g:4.2}
+];
+let region="all";
+const sel=()=>STORES.filter(s=>region==="all"||s.r===region);
+const wavg=(arr,f)=>{let t=0,w=0;arr.forEach(s=>{const v=f(s);if(v!=null){t+=v*s.resp;w+=s.resp}});return w?t/w:0};
+/* ---------- nav ---------- */
+const TITLES={dash:["Insights","Retail CX Executive Dashboard"],store:["Channels","Storefront SpotChecks"],echo:["AI Suite","Echo · Conversational AI Agent"],tix:["Close the loop","Ticket Management"],cog:["AI Suite","CogniVue · Retail Insights"],rep:["Channels","Reputation Management"],int:["Settings","Retail Integrations"]};
+function go(v){$$('.nav').forEach(b=>b.setAttribute('aria-current',b.dataset.v===v?'page':'false'));$$('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));$('#crumb').textContent='Kestrel & Co. / '+TITLES[v][0];$('#title').textContent=TITLES[v][1];try{localStorage.setItem('ss-view',v)}catch(e){}window.scrollTo(0,0)}
+$$('.nav').forEach(b=>b.onclick=()=>go(b.dataset.v));
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
+$('#region').onchange=e=>{region=e.target.value;renderDash();renderRep()};
+/* ---------- dashboard ---------- */
+function heat(col,v){if(v==null)return["#f3f5f8","—"];let s;if(col===1)s=(v-3.5)/1.2*80;else if(col===5)s=(v-2.5)/3.3*80;else s=v;const c=s>=60?"#7fd9b4":s>=45?"#d2f2e4":s>=30?"#ffe5bd":s>=15?"#ffc9c9":"#f58e8e";return[c,col===1||col===5?v.toFixed(1):v]}
+function renderDash(){
+  const S=sel();const resp=S.reduce((a,s)=>a+s.resp,0);const nps=Math.round(wavg(S,s=>s.nps));
+  const csat=wavg(S,s=>s.m[1]),ces=wavg(S,s=>s.m[5]),g=wavg(S,s=>s.g);
+  const det=Math.round(resp*(75-nps)/200);const risk=Math.round(det*0.38*186/1000);
+  const k=[
+   ["hero","Revenue at risk","£"+risk+"k","",`${det.toLocaleString()} detractors × £186 avg annual spend × 38% churn`],
+   ["","Group NPS",nps,"",`<span class="up">▲ 6 pts</span> vs last 30 days`],
+   ["","Checkout CSAT",csat.toFixed(1),"/5",`<span class="up">▲ 0.2</span> after one-page checkout`],
+   ["","Returns effort (CES)",ces.toFixed(1),"/7",`<span class="dn">▼ 0.3</span> lowest journey stage`],
+   ["","Avg Google rating",g.toFixed(1),"★",`<span class="up">▲ 0.1</span> · ${S.length} location${S.length>1?'s':''}`],
+   ["","Responses",resp.toLocaleString(),"",`31% response rate · 7 channels`]];
+  $('#kpis').innerHTML=k.map(x=>`<div class="panel kpi ${x[0]}"><div class="l">${x[1]}</div><div class="v">${x[2]}<small>${x[3]}</small></div><div class="d">${x[4]}</div></div>`).join('');
+  // trend
+  const W=640,H=230,P={l:34,r:12,t:12,b:26};const wk=12;const base=nps;
+  const pts=[...Array(wk)].map((_,i)=>Math.round(base-6+i*0.55+Math.sin(i*1.3)*3));pts[wk-1]=base;
+  const prom=pts.map(v=>(75+v)/2),detr=pts.map(v=>(75-v)/2);
+  const x=i=>P.l+(i+.5)*(W-P.l-P.r)/wk,y=v=>P.t+(1-(v+0)/100)*(H-P.t-P.b);
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="NPS trend over 12 weeks">`;
+  [0,25,50,75,100].forEach(v=>{s+=`<line x1="${P.l}" x2="${W-P.r}" y1="${y(v)}" y2="${y(v)}" stroke="#eef2f6"/><text x="${P.l-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#7b8796">${v}</text>`});
+  const bw=(W-P.l-P.r)/wk*0.32;
+  pts.forEach((_,i)=>{s+=`<rect x="${x(i)-bw-1}" y="${y(prom[i])}" width="${bw}" height="${y(0)-y(prom[i])}" rx="3" fill="#e3f7ef" stroke="#12a679" stroke-opacity=".35"/><rect x="${x(i)+1}" y="${y(detr[i])}" width="${bw}" height="${y(0)-y(detr[i])}" rx="3" fill="#fdeaea" stroke="#df4146" stroke-opacity=".35"/>`;if(i%2===0)s+=`<text x="${x(i)}" y="${H-6}" text-anchor="middle" font-size="11" fill="#7b8796">W${32+i}</text>`});
+  const d=pts.map((v,i)=>(i?'L':'M')+x(i)+' '+y(v)).join(' ');
+  s+=`<path d="${d} L${x(wk-1)} ${y(0)} L${x(0)} ${y(0)}Z" fill="#1597a8" fill-opacity=".08"/><path d="${d}" fill="none" stroke="#1597a8" stroke-width="3" stroke-linejoin="round"/>`;
+  s+=`<circle cx="${x(wk-1)}" cy="${y(base)}" r="6" fill="#1597a8" stroke="#fff" stroke-width="2"/><text x="${x(wk-1)-10}" y="${y(base)-12}" text-anchor="end" font-size="13" font-weight="800" fill="#1d2735">NPS ${base}</text></svg>`;
+  $('#trend').innerHTML=s;
+  // stages
+  const st=[["Browse & search","CSAT",4.3,5,4.2],["Checkout","CES",ces+1.7>7?6.6:ces+1.7,7,5.5],["Delivery","CSAT",3.8,5,4.2],["Click & Collect","CES",4.1,7,5.5],["In-store visit","NPS",Math.round(wavg(S.filter(s=>s.r!=="Online").length?S.filter(s=>s.r!=="Online"):S,s=>s.nps)),100,45],["Returns","CES",ces,7,5.0],["Loyalty app","CSAT",4.4,5,4.2]];
+  $('#stages').innerHTML=st.map(r=>{const pct=r[1]==="NPS"?(r[2]+100)/2:r[2]/r[3]*100;const ok=r[2]>=r[4];const c=ok?'var(--good)':r[2]>=r[4]*.9?'var(--warn)':'var(--bad)';return `<div class="stage"><span>${r[0]}</span><div class="track"><i style="width:${pct}%;background:${c}"></i></div><b style="text-align:right">${r[1]==="NPS"?r[2]:r[2].toFixed(1)}</b><span class="small muted dl">${r[1]} · ${r[4]}</span></div>`}).join('');
+  // heatmap
+  let h='<thead><tr><th>Location</th><th class="c">Responses</th>'+COLS.map(c=>`<th class="c">${c}</th>`).join('')+'<th>Manager</th></tr></thead><tbody>';
+  S.forEach((s,ri)=>{h+=`<tr><td><b>${s.n}</b><div class="small muted">${s.r}</div></td><td class="c" style="text-align:center">${s.resp.toLocaleString()}</td>`+s.m.map((v,ci)=>{const[c,t]=heat(ci,v);return `<td class="c" tabindex="0" data-s="${STORES.indexOf(s)}" style="background:${c}">${t}</td>`}).join('')+`<td class="small">${s.mgr}</td></tr>`});
+  $('#hm').innerHTML=h+'</tbody>';
+  $$('#hm td.c[data-s]').forEach(td=>{td.onclick=()=>storeDrawer(+td.dataset.s);td.onkeydown=e=>{if(e.key==='Enter')storeDrawer(+td.dataset.s)}});
+  // loyalty
+  const L=[["Promoters",312,2.9,"var(--good)"],["Passives",198,1.9,"var(--warn)"],["Detractors",121,1.2,"var(--bad)"]];
+  $('#loyal').innerHTML=`<p class="small muted" style="margin:0 0 12px">12-month spend per customer, joined from Shopify orders</p>`+L.map(r=>`<div class="stage" style="grid-template-columns:90px 1fr 54px"><span>${r[0]}</span><div class="track" style="height:14px"><i style="width:${r[1]/3.4}%;background:${r[3]}"></i></div><b style="text-align:right">£${r[1]}</b></div>`).join('')+`<p class="small" style="margin:12px 0 0"><b>Promoters spend 2.6×</b> what detractors do and order ${L[0][2]} times a year.</p>`;
+  // channels donut
+  const ch=[["Receipt QR",28,"#253043"],["Email",22,"#1597a8"],["SpotChecks (web/app)",19,"#6247ea"],["WhatsApp (Echo)",14,"#12a679"],["SMS",9,"#e8930c"],["In-store kiosk",8,"#e0479e"]];
+  let a0=-Math.PI/2,dn=`<div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap"><svg viewBox="0 0 120 120" width="130" height="130" role="img" aria-label="Responses by channel">`;
+  ch.forEach(c=>{const a1=a0+c[1]/100*Math.PI*2;const L=a1-a0>Math.PI?1:0;const p=(r,a)=>[60+r*Math.cos(a),60+r*Math.sin(a)];const[x1,y1]=p(54,a0),[x2,y2]=p(54,a1),[x3,y3]=p(34,a1),[x4,y4]=p(34,a0);dn+=`<path d="M${x1} ${y1}A54 54 0 ${L} 1 ${x2} ${y2}L${x3} ${y3}A34 34 0 ${L} 0 ${x4} ${y4}Z" fill="${c[2]}" stroke="#fff" stroke-width="1.5"/>`;a0=a1});
+  dn+=`<text x="60" y="58" text-anchor="middle" font-size="16" font-weight="800" fill="#1d2735">${(resp/1000).toFixed(1)}k</text><text x="60" y="73" text-anchor="middle" font-size="9" fill="#7b8796">responses</text></svg><div class="legend" style="flex-direction:column;gap:6px;min-width:0">`+ch.map(c=>`<span><i style="background:${c[2]}"></i>${c[0]} · <b>${c[1]}%</b></span>`).join('')+'</div></div>';
+  $('#channels').innerHTML=dn;
+  $('#mini-themes').innerHTML=THEMES.slice(0,5).map(t=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line-2)"><span style="flex:1;font-weight:600">${t.n}</span><span class="pill ${t.imp<0?'p-bad':'p-good'}">${t.imp>0?'+':''}${t.imp} NPS</span></div>`).join('');
+}
+function storeDrawer(i){const s=STORES[i];const vb=VERB[s.r]||VERB.London;
+  const L=$('#layer');L.innerHTML=`<div class="scrim"></div><aside class="drawer" role="dialog" aria-label="${esc(s.n)}"><button class="x" aria-label="Close">×</button><div class="small muted">${s.r} · Manager ${s.mgr}</div><h3>${s.n}</h3>
+  <div class="grid g-2e" style="gap:10px;margin:16px 0">${[["NPS",s.m[0]],["Checkout CSAT",s.m[1]],["Returns CES",s.m[5]],["Google rating",s.g+"★"]].map(k=>`<div class="panel kpi" style="padding:12px"><div class="l">${k[0]}</div><div class="v" style="font-size:24px">${k[1]??'—'}</div></div>`).join('')}</div>
+  <div class="cat">Top themes this month</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 16px">${vb.t.map(t=>`<span class="pill ${t[1]}">${t[0]}</span>`).join('')}</div>
+  <div class="cat">Recent verbatims</div>${vb.v.map(v=>`<div class="rv" style="margin-top:8px"><div class="small muted">${v[0]}</div><div>“${v[1]}”</div></div>`).join('')}
+  <div class="cat" style="margin-top:16px">Access</div><p class="small" style="margin:6px 0 0">${s.mgr} sees this store only. Regional managers see every store in ${s.r}.</p>
+  <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap"><button class="btn pri" data-go="tix">View store tickets</button><button class="btn ghost" id="share">Share with store team</button></div></aside>`;
+  const close=()=>L.innerHTML='';L.querySelector('.scrim').onclick=close;L.querySelector('.x').onclick=close;L.querySelector('[data-go]').addEventListener('click',close);L.querySelector('#share').onclick=()=>{toast('Dashboard shared with '+s.mgr+' (location-restricted)');close()};document.addEventListener('keydown',function k(e){if(e.key==='Escape'){close();document.removeEventListener('keydown',k)}});L.querySelector('.x').focus()}
+const VERB={London:{t:[["Staff helpfulness","p-good"],["Fitting-room queues","p-bad"],["Product quality","p-good"]],v:[["NPS 10 · Receipt QR","Sam on the shop floor found my size in the stockroom in two minutes."],["NPS 5 · Kiosk","Fitting room queue was 25 minutes on Saturday."]]},North:{t:[["Returns process","p-bad"],["No receipt, no refund","p-bad"],["Click & Collect wait","p-warn"]],v:[["NPS 2 · Receipt QR","They wouldn't refund without a paper receipt even though it's on my app."],["NPS 4 · WhatsApp","Waited 20 minutes at the Click & Collect desk."]]},Midlands:{t:[["Stock availability","p-bad"],["Click & Collect wait","p-bad"],["Staff helpfulness","p-good"]],v:[["NPS 3 · SMS","Website said in stock, store didn't have my size."],["NPS 9 · Receipt QR","Lovely team, really patient."]]},Scotland:{t:[["Staff helpfulness","p-good"],["Store ambience","p-good"],["Size & fit","p-warn"]],v:[["NPS 10 · Email","Best shopping experience I've had on Buchanan St."],["NPS 7 · Kiosk","Sizes run small in trousers."]]},"South West":{t:[["Product quality","p-good"],["Loyalty rewards","p-good"]],v:[["NPS 9 · Email","Points redeemed instantly at the till."]]},Online:{t:[["Delivery delays","p-bad"],["Damaged items","p-bad"],["Size & fit","p-warn"]],v:[["CSAT 1 · SpotCheck","Promo code wouldn't apply at checkout."],["NPS 3 · Echo","Parcel two days late and the vase was chipped."]]}};
+/* ---------- storefront ---------- */
+let bag=1,shopPage='pdp',fc=0;
+const RULES=[{id:'checkout',n:'Checkout ease (CES)',d:'URL contains /checkout · after 8s · 1 in 3 visitors',on:true},{id:'exit',n:'Bag exit intent',d:'Bag has items · cursor leaves page · once per 7 days',on:true},{id:'search',n:'Search with no results',d:'Search returns 0 items · immediately',on:true},{id:'done',n:'Post-purchase NPS',d:'Order confirmation page · after 3s',on:true}];
+function renderRules(){$('#rules').innerHTML=RULES.map((r,i)=>`<div class="rule"><b>${r.n}</b><button class="tg" aria-pressed="${r.on}" aria-label="Toggle ${r.n}" data-i="${i}"></button><span class="small muted">${r.d}</span></div>`).join('')+`<p class="small muted" style="margin:10px 0 0">Installed with one script tag or the Shopify app. Respondents are matched to the Shopify customer automatically.</p>`;$$('#rules .tg').forEach(b=>b.onclick=()=>{const r=RULES[+b.dataset.i];r.on=!r.on;b.setAttribute('aria-pressed',r.on);toast(r.n+(r.on?' turned on':' paused'))})}
+const ruleOn=id=>RULES.find(r=>r.id===id).on;
+let spotTimer;
+function page(p){shopPage=p;clearTimeout(spotTimer);$$('#shopnav button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));const old=$('#browser .spot');if(old)old.remove();
+  const U={pdp:'kestrelandco.com/linen-overshirt',search:'kestrelandco.com/search?q=linen+wide+leg+trousers+petite',cart:'kestrelandco.com/bag',checkout:'kestrelandco.com/checkout',done:'kestrelandco.com/order/KC-20977/thanks'};$('#url').textContent=U[p];
+  const sh=$('#shop');
+  if(p==='pdp')sh.innerHTML=`<div class="prod"><div class="img" style="background:linear-gradient(150deg,#e6d6c2,#b89a7c)"></div><div><div class="small muted">Menswear / Shirts</div><h3 style="margin:4px 0;font-size:22px">Linen Overshirt</h3><div style="font-size:18px;font-weight:700">£59.00</div><div class="stars small" style="margin-top:6px">★★★★☆ <span class="muted">412 reviews</span></div><div class="sz"><span>S</span><span class="on">M</span><span>L</span><span>XL</span></div><p class="small muted">Relaxed fit, 100% European linen. Free returns in store or by post within 30 days.</p><button class="shop-btn" id="add">Add to bag</button><p class="small" style="margin-top:10px">In stock at <b>Oxford St</b> · Click &amp; Collect today</p></div></div>`;
+  if(p==='search')sh.innerHTML=`<div style="border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--ink-2)">🔍 linen wide leg trousers petite</div><h3 style="margin:24px 0 6px">No results found</h3><p class="muted">We couldn't find anything for “linen wide leg trousers petite”.</p>`;
+  if(p==='cart')sh.innerHTML=`<h3 style="margin:0 0 6px">Your bag (${bag})</h3><div class="line"><div class="thumb" style="background:linear-gradient(150deg,#e6d6c2,#b89a7c)"></div><div style="flex:1"><b>Linen Overshirt</b><div class="small muted">Sand · M</div></div><b>£59.00</b></div>${bag>1?`<div class="line"><div class="thumb" style="background:linear-gradient(150deg,#b8cad8,#5d7a92)"></div><div style="flex:1"><b>Ceramic Vase</b><div class="small muted">Slate</div></div><b>£34.00</b></div>`:''}<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px"><button class="shop-btn alt" id="leave">Leave site ↗</button><button class="shop-btn" data-p2="checkout">Checkout</button></div><p class="small muted" style="margin-top:10px">Tip: “Leave site” simulates exit intent.</p>`;
+  if(p==='checkout')sh.innerHTML=`<h3 style="margin:0 0 12px">Checkout</h3><div class="grid g-2e" style="gap:10px">${['Email','Delivery address','Delivery option: Standard (3–5 days)','Card ending 4242'].map(t=>`<div style="border:1px solid var(--line);border-radius:8px;padding:12px" class="small">${t}</div>`).join('')}</div><button class="shop-btn" style="margin-top:16px" data-p2="done">Place order · £${bag>1?'93.00':'59.00'}</button><p class="small muted" style="margin-top:10px">A checkout SpotCheck appears shortly.</p>`;
+  if(p==='done')sh.innerHTML=`<div style="text-align:center;padding:30px 0"><div style="font-size:40px">✓</div><h3 style="margin:6px 0">Thanks, Priya. Order KC-20977 is confirmed.</h3><p class="muted">We'll email you when it ships.</p></div>`;
+  const add=$('#add');if(add)add.onclick=()=>{bag=2;toast('Added to bag');page('cart')};
+  $$('[data-p2]').forEach(b=>b.onclick=()=>page(b.dataset.p2));
+  const lv=$('#leave');if(lv)lv.onclick=()=>{if(ruleOn('exit'))spot('exit');else toast('Exit-intent rule is paused')};
+  if(p==='checkout'&&ruleOn('checkout'))spotTimer=setTimeout(()=>spot('checkout'),1600);
+  if(p==='search'&&ruleOn('search'))spotTimer=setTimeout(()=>spot('search'),500);
+  if(p==='done'&&ruleOn('done'))spotTimer=setTimeout(()=>spot('done'),1200);
+}
+$$('#shopnav button').forEach(b=>b.onclick=()=>page(b.dataset.p));
+const SPOTS={
+ checkout:{k:'QUICK QUESTION',q:'How easy was it to complete your checkout today?',type:'scale',n:[1,2,3,4,5,6,7],lab:['Very difficult','Very easy'],metric:'CES'},
+ exit:{k:'BEFORE YOU GO',q:"What's stopping you from checking out today?",type:'opts',o:['Delivery cost is too high','Not sure about the size','Just browsing','Found it cheaper elsewhere'],metric:'Abandon reason'},
+ search:{k:'HELP US IMPROVE',q:"Couldn't find it? Tell us what you were looking for.",type:'opts',o:['Petite sizes','A specific colour','Something from the catalogue','Something in store'],metric:'Search gap'},
+ done:{k:'ONE LAST THING',q:'How likely are you to recommend Kestrel & Co. to a friend?',type:'scale',n:[0,1,2,3,4,5,6,7,8,9,10],lab:['Not likely','Very likely'],metric:'NPS'}};
+function spot(id){const s=SPOTS[id];const b=$('#browser');const old=b.querySelector('.spot');if(old)old.remove();const d=document.createElement('div');d.className='spot'+(id==='exit'?' center':'');d.setAttribute('role','dialog');
+  d.innerHTML=`<button class="xx" aria-label="Dismiss">×</button><div class="k">${s.k}</div><div class="q">${s.q}</div>`+(s.type==='scale'?`<div class="scale">${s.n.map(v=>`<button data-v="${v}">${v}</button>`).join('')}</div><div style="display:flex;justify-content:space-between;font-size:11px;opacity:.8;margin-top:6px"><span>${s.lab[0]}</span><span>${s.lab[1]}</span></div>`:`<div class="opts">${s.o.map(v=>`<button data-v="${esc(v)}">${v}</button>`).join('')}</div>`);
+  b.appendChild(d);d.querySelector('.xx').onclick=()=>d.remove();
+  d.querySelectorAll('[data-v]').forEach(x=>x.onclick=()=>{const v=x.dataset.v;d.innerHTML=`<div class="q" style="margin:4px 0">Thanks! That really helps.</div><div class="small" style="opacity:.85">Your answer goes straight to our team.</div>`;setTimeout(()=>d.remove(),1500);log(id,s,v)})}
+function log(id,s,v){fc++;$('#fcount').textContent=fc+' today';const f=$('#feed');if(fc===1)f.innerHTML='';
+  const num=+v;const low=(s.metric==='CES'&&num<=3)||(s.metric==='NPS'&&num<=6);const good=(s.metric==='CES'&&num>=6)||(s.metric==='NPS'&&num>=9);
+  const el=document.createElement('div');el.className='fi';el.innerHTML=`<div style="display:flex;gap:8px;align-items:center"><b style="flex:1">${s.metric}: ${esc(v)}</b><span class="pill ${low?'p-bad':good?'p-good':'p-n'}">${low?'Detractor':good?'Promoter':'Logged'}</span></div><div class="small muted">${SPOTS[id].q}</div><div class="meta"><span class="pill p-n">${$('#url').textContent.split('?')[0]}</span><span class="pill p-n">Bag £${bag>1?'93':'59'}</span><span class="pill p-info">Gold member</span><span class="pill p-n">iPhone · Safari</span></div>`+(low?`<div class="small" style="margin-top:8px;color:var(--bad);font-weight:700">⚡ Ticket TCK-${4830+fc} created · assigned to eCom team</div>`:'')+(id==='exit'&&v.startsWith('Delivery')?`<div class="small" style="margin-top:8px;color:var(--ai);font-weight:700">↳ Klaviyo: free-delivery code sent to Priya</div>`:'')+(good&&s.metric==='NPS'?`<div class="small" style="margin-top:8px;color:var(--good);font-weight:700">↳ Google review invite queued</div>`:'');
+  f.prepend(el);if(low)toast('Low score: ticket created and routed')}
+/* ---------- echo ---------- */
+const ECHO=[
+ {ai:"Hi Priya 👋 Your Kestrel & Co. order arrived yesterday. How did the delivery go?",st:"Ask",c:["Great, all good!","It came late and the box was crushed"]},
+ {ai:"Sorry to hear that. Was the vase itself damaged, or only the packaging?",st:"Clarify",c:["The vase is chipped","Just the packaging"],if:1},
+ {ai:"Thanks for telling me. Would you prefer a replacement or a refund?",st:"Clarify",c:["Replacement please","Refund to my card"]},
+];
+let eStep=0,eData={};
+function echoStart(){eStep=0;eData={Channel:'WhatsApp',Order:'#KC-20931 · £93.00',Customer:'Priya Shah · Gold'};$('#chat').innerHTML='';echoAI();renderKV()}
+function renderKV(){$('#echo-kv').innerHTML=Object.entries(eData).map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')}
+function echoAI(){const m=ECHO[eStep];const ch=$('#chat');const b=document.createElement('div');b.className='b ai';b.innerHTML=`<span class="st" style="color:${m.st==='Ask'?'#1597a8':'#d6338a'}">${m.st}</span>${m.ai}`;ch.appendChild(b);
+  const c=document.createElement('div');c.className='choices';c.innerHTML=m.c.map((t,i)=>`<button data-i="${i}">${t}</button>`).join('');ch.appendChild(c);
+  c.querySelectorAll('button').forEach(x=>x.onclick=()=>{c.remove();const me=document.createElement('div');me.className='b me';me.textContent=x.textContent;ch.appendChild(me);echoAns(+x.dataset.i,x.textContent)})}
+function echoAns(i,t){
+  if(eStep===0){if(i===0){eData.Sentiment='<span class="pill p-good">Positive</span>';eData['Delivery CSAT']='5 / 5';renderKV();return echoEnd(false)}eData.Sentiment='<span class="pill p-bad">Negative</span>';eData.Themes='<span class="pill p-n">Delivery delay</span> <span class="pill p-n">Packaging</span>';eData['Delivery CSAT']='2 / 5'}
+  if(eStep===1){if(i===0)eData.Themes+=' <span class="pill p-n">Damaged item</span>';else{renderKV();return echoEnd(false,true)}}
+  if(eStep===2){eData.Resolution=t.startsWith('Repl')?'Replacement':'Refund'}
+  renderKV();eStep++;if(eStep<ECHO.length)setTimeout(echoAI,500);else setTimeout(()=>echoEnd(true),500)}
+function echoEnd(ticket,pack){const ch=$('#chat');const b=document.createElement('div');b.className='b ai';
+  if(ticket){b.innerHTML=`<span class="st" style="color:#e8930c">Act</span>Done. I've arranged your ${eData.Resolution.toLowerCase()} and our returns team will email you within 4 hours. A courier will collect the vase, so there's nothing to print.`;ch.appendChild(b);
+    const a=document.createElement('div');a.className='act';a.innerHTML=`<b style="color:#a86400">⚡ Ticket TCK-4821 created</b><div class="small muted">Priority High (Gold member) · Returns Team · SLA 4h · ${eData.Resolution} logged in Shopify · Courier flagged in Slack #delivery-ops</div>`;ch.appendChild(a);eData.Action='<span class="pill p-warn">Ticket TCK-4821</span>';renderKV()}
+  else{b.innerHTML=`<span class="st" style="color:#e8930c">Act</span>${pack?"Thanks, I've flagged the packaging with our courier team.":"Brilliant, thank you! Would you leave a quick Google review? It helps a lot."}`;ch.appendChild(b);eData.Action=pack?'<span class="pill p-info">Courier feedback logged</span>':'<span class="pill p-good">Review invite sent</span>';renderKV()}
+  ch.scrollTop=ch.scrollHeight}
+$('#echo-reset').onclick=echoStart;
+/* ---------- tickets ---------- */
+const TIX=[
+ {id:"TCK-4821",c:"Priya Shah",tier:"Gold",st:"Online",src:"Echo · WhatsApp",th:"Damaged item",p:"High",sla:"3h 41m",a:"Tom Mills",s:"Open",fb:"Parcel two days late and the vase was chipped on the rim.",score:"CSAT 2"},
+ {id:"TCK-4819",c:"Daniel Webb",tier:"Silver",st:"Manchester Arndale",src:"Receipt QR",th:"Returns process",p:"High",sla:"5h 10m",a:"Aisha Rahman",s:"Open",fb:"They wouldn't refund without a paper receipt even though the order is in my app.",score:"NPS 2"},
+ {id:"TCK-4816",c:"Grace Liu",tier:"Gold",st:"Birmingham Bullring",src:"SMS",th:"Stock availability",p:"Medium",sla:"11h 02m",a:"Raj Malhotra",s:"Open",fb:"Website said my size was in stock at Bullring. It wasn't.",score:"NPS 3"},
+ {id:"TCK-4812",c:"Marcus Hill",tier:"—",st:"Online",src:"SpotCheck · checkout",th:"Promo code error",p:"Medium",sla:"14h 30m",a:"Priya Nair",s:"Open",fb:"WELCOME10 wouldn't apply at checkout so I gave up.",score:"CES 2"},
+ {id:"TCK-4809",c:"Olivia Grant",tier:"Silver",st:"Leeds Trinity",src:"WhatsApp",th:"Click & Collect wait",p:"Medium",sla:"Breached",a:"Owen Price",s:"Open",fb:"Waited 20 minutes at the Click & Collect desk with nobody there.",score:"NPS 4"},
+ {id:"TCK-4805",c:"James Shaw",tier:"—",st:"London Oxford St",src:"Google review",th:"Fitting-room queues",p:"Low",sla:"20h 15m",a:"Hannah Cole",s:"Pending",fb:"Queue for fitting rooms was 25 minutes on Saturday and only one till open.",score:"2★"},
+ {id:"TCK-4798",c:"Ben Carter",tier:"Gold",st:"Westfield Stratford",src:"Kiosk",th:"Staff availability",p:"Medium",sla:"—",a:"Maya Osei",s:"Resolved",fb:"Couldn't find anyone to help on the shop floor.",score:"NPS 5"},
+ {id:"TCK-4790",c:"Chloe Adams",tier:"Silver",st:"Online",src:"Email",th:"Delivery delay",p:"Low",sla:"—",a:"Tom Mills",s:"Resolved",fb:"Order took 8 days to arrive.",score:"CSAT 2"}];
+let tFilter="Open";
+const AVC=["#c9e6ff","#ffe3c9","#dff5e8","#efe6ff","#ffd9e6","#d7f3f8"];
+function renderTix(){const open=TIX.filter(t=>t.s==="Open").length;
+  $('#tkpis').innerHTML=[["Open tickets",open+29,"",`<span class="dn">3 past SLA</span>`],["Avg first response","1h 52m","",`<span class="up">▼ 38%</span> since auto-routing`],["Avg resolution","19h","",`<span class="up">▼ 6h</span> vs last month`],["Loop closed","87%","",`of detractors contacted`],["Recovered","41%","",`detractors re-surveyed as 7+`],["Saved revenue","£48k","",`recovered customers × annual spend`]].map(x=>`<div class="panel kpi"><div class="l">${x[0]}</div><div class="v">${x[1]}</div><div class="d">${x[3]}</div></div>`).join('');
+  const rows=TIX.filter(t=>tFilter==="All"||t.s===tFilter);
+  $('#ttable').innerHTML=`<thead><tr><th>Ticket</th><th>Customer</th><th>Location</th><th>Source</th><th>Theme</th><th>Priority</th><th>SLA</th><th>Assignee</th></tr></thead><tbody>`+rows.map((t,i)=>`<tr class="click" tabindex="0" data-id="${t.id}"><td class="mono">${t.id}</td><td><b>${t.c}</b>${t.tier!=="—"?` <span class="pill p-info">${t.tier}</span>`:''}</td><td>${t.st}</td><td class="small">${t.src}</td><td><span class="pill p-n">${t.th}</span></td><td><span class="pill ${t.p==="High"?'p-bad':t.p==="Medium"?'p-warn':'p-n'}">${t.p}</span></td><td class="${t.sla==="Breached"?'dn':''}" style="font-weight:700">${t.sla}</td><td><span style="display:inline-flex;gap:8px;align-items:center"><span class="av" style="background:${AVC[i%6]}">${t.a.split(' ').map(w=>w[0]).join('')}</span>${t.a}</span></td></tr>`).join('')+'</tbody>';
+  $$('#ttable tr.click').forEach(r=>{r.onclick=()=>tDrawer(r.dataset.id);r.onkeydown=e=>{if(e.key==='Enter')tDrawer(r.dataset.id)}})}
+$$('#ttabs button').forEach(b=>b.onclick=()=>{tFilter=b.dataset.s;$$('#ttabs button').forEach(x=>x.setAttribute('aria-pressed',x===b));renderTix()});
+const REPLY=t=>`Hi ${t.c.split(' ')[0]}, thank you for telling us about this, and I'm sorry. ${t.th==="Damaged item"?"We're sending a replacement today and a courier will collect the damaged vase, so there's nothing to print.":t.th==="Returns process"?"Your app order history counts as proof of purchase. I've refunded you to your original card and briefed the store team.":t.th==="Stock availability"?"I've reserved your size at our Bullring store for 48 hours and fixed the stock sync that showed it as available.":"I've shared this with the team responsible and we're fixing it this week."} I'm your direct contact if anything else comes up.`;
+function tDrawer(id){const t=TIX.find(x=>x.id===id);const L=$('#layer');
+  L.innerHTML=`<div class="scrim"></div><aside class="drawer" role="dialog" aria-label="${t.id}"><button class="x" aria-label="Close">×</button><div class="mono muted">${t.id} · ${t.src}</div><h3>${t.c} <span class="pill p-bad" style="vertical-align:middle">${t.score}</span></h3>
+  <p style="font-size:16px;font-weight:600;margin:12px 0">“${t.fb}”</p>
+  <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="pill p-n">${t.th}</span><span class="pill p-bad">Negative</span><span class="pill p-n">${t.st}</span></div>
+  <div class="cat" style="margin-top:18px">Customer context · Shopify + Salesforce</div>
+  <dl class="kv" style="margin-top:8px"><dt>Tier</dt><dd>${t.tier==="—"?"Guest":t.tier}</dd><dt>Lifetime spend</dt><dd>£${t.tier==="Gold"?"1,240":t.tier==="Silver"?"620":"93"}</dd><dt>Orders (12m)</dt><dd>${t.tier==="Gold"?7:t.tier==="Silver"?4:1}</dd><dt>Last NPS</dt><dd>${t.tier==="Gold"?"9 (March)":"—"}</dd></dl>
+  <div class="cat" style="margin-top:18px">Assign</div>
+  <select class="sel" id="assign" style="margin-top:6px;width:100%"><option>${t.a}</option><option>Returns Team</option><option>Regional Manager · North</option><option>eCommerce Team</option></select>
+  <div class="wing" style="margin-top:18px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><b style="color:var(--ai)">✦ Wing a response</b><div style="flex:1"></div><button class="btn ghost" id="wing">Draft with AI</button></div><textarea id="reply" aria-label="Reply to customer" placeholder="Write a reply or let Wing AI draft one."></textarea></div>
+  <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap"><button class="btn pri" id="send">Send &amp; resolve</button><button class="btn ghost" id="pend">Mark pending</button></div>
+  <div class="cat" style="margin-top:20px">Timeline</div><div class="small" style="display:grid;gap:6px;margin-top:8px"><span>● Response received · ${t.src}</span><span>● Ticket auto-created by “Detractor recovery”</span><span>● Assigned to ${t.a} · Slack #store-ops notified</span></div></aside>`;
+  const close=()=>L.innerHTML='';L.querySelector('.scrim').onclick=close;L.querySelector('.x').onclick=close;
+  L.querySelector('#wing').onclick=()=>{const ta=L.querySelector('#reply');const txt=REPLY(t);ta.value='';let i=0;const iv=setInterval(()=>{ta.value=txt.slice(0,i+=4);if(i>=txt.length)clearInterval(iv)},16)};
+  L.querySelector('#send').onclick=()=>{t.s="Resolved";t.sla="—";close();renderTix();toast(t.id+' resolved. '+t.c.split(' ')[0]+' gets a follow-up survey in 7 days.')};
+  L.querySelector('#pend').onclick=()=>{t.s="Pending";close();renderTix();toast(t.id+' moved to Pending')};
+  L.querySelector('#assign').onchange=e=>{t.a=e.target.value;renderTix();toast('Reassigned to '+e.target.value)};
+  document.addEventListener('keydown',function k(e){if(e.key==='Escape'){close();document.removeEventListener('keydown',k)}});L.querySelector('.x').focus()}
+/* ---------- cognivue ---------- */
+const THEMES=[
+ {n:"Delivery delays",m:2140,pos:12,neu:18,imp:-7.2,tr:[3,4,4,5,6,7,8],q:[.12,.18]},
+ {n:"Returns process",m:1680,pos:15,neu:20,imp:-5.4,tr:[5,5,6,6,6,7,7],q:[.25,.28]},
+ {n:"Click & Collect wait",m:960,pos:18,neu:22,imp:-3.9,tr:[2,2,3,3,4,5,6],q:[.2,.42]},
+ {n:"Staff helpfulness",m:3310,pos:81,neu:11,imp:+6.1,tr:[6,6,7,6,7,7,7],q:[.72,.15]},
+ {n:"Product quality",m:2870,pos:74,neu:14,imp:+4.8,tr:[5,5,5,6,6,6,6],q:[.84,.3]},
+ {n:"Stock availability",m:1430,pos:21,neu:24,imp:-2.6,tr:[4,4,4,5,4,5,5],q:[.32,.62]},
+ {n:"Size & fit",m:1210,pos:35,neu:30,imp:-1.8,tr:[4,4,4,4,4,4,4],q:[.4,.78]},
+ {n:"Promo code errors",m:540,pos:6,neu:12,imp:-1.5,tr:[1,1,1,2,2,3,4],q:[.1,.7]},
+ {n:"Loyalty rewards",m:820,pos:66,neu:22,imp:+1.6,tr:[3,3,3,3,4,4,4],q:[.8,.72]},
+ {n:"Store ambience",m:690,pos:70,neu:20,imp:+1.1,tr:[3,3,3,3,3,3,3],q:[.66,.85]}];
+function spark(a,c){const w=80,h=24,mx=Math.max(...a),mn=Math.min(...a)-1;return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true"><path d="${a.map((v,i)=>(i?'L':'M')+(i*w/(a.length-1)).toFixed(1)+' '+(h-2-(v-mn)/(mx-mn)*(h-4)).toFixed(1)).join(' ')}" fill="none" stroke="${c}" stroke-width="2"/></svg>`}
+function renderCog(){
+  $('#themes').innerHTML=THEMES.map(t=>{const neg=100-t.pos-t.neu;return `<div class="theme-row"><b>${t.n}</b><span>${t.m.toLocaleString()}</span><div class="sent" title="${t.pos}% positive, ${neg}% negative"><i style="width:${t.pos}%;background:var(--good)"></i><i style="width:${t.neu}%;background:#cfd7e0"></i><i style="width:${neg}%;background:var(--bad)"></i></div><span class="pill ${t.imp<0?'p-bad':'p-good'}">${t.imp>0?'+':''}${t.imp}</span><span class="tr">${spark(t.tr,t.imp<0?'#df4146':'#12a679')}</span></div>`}).join('');
+  const W=520,H=380,P=36;let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Driver quadrant: impact versus sentiment">`;
+  s+=`<rect x="${P}" y="10" width="${(W-P*2)/2}" height="${(H-50)/2}" fill="#fdeaea" opacity=".6"/><rect x="${P+(W-P*2)/2}" y="10" width="${(W-P*2)/2}" height="${(H-50)/2}" fill="#e3f7ef" opacity=".6"/><rect x="${P}" y="${10+(H-50)/2}" width="${W-P*2}" height="${(H-50)/2}" fill="#f6f8fa"/>`;
+  s+=`<text x="${P+8}" y="28" font-size="12" font-weight="800" fill="#b8282d">FIX FIRST</text><text x="${W-P-8}" y="28" text-anchor="end" font-size="12" font-weight="800" fill="#0b7d5a">LEVERAGE FOR GROWTH</text><text x="${P+8}" y="${H-46}" font-size="12" font-weight="800" fill="#7b8796">MONITOR</text><text x="${W-P-8}" y="${H-46}" text-anchor="end" font-size="12" font-weight="800" fill="#7b8796">MAINTAIN</text>`;
+  s+=`<text x="${W/2}" y="${H-12}" text-anchor="middle" font-size="11" fill="#7b8796">Sentiment → more positive</text><text transform="translate(14 ${H/2-20}) rotate(-90)" text-anchor="middle" font-size="11" fill="#7b8796">Impact on NPS ↑</text>`;
+  THEMES.forEach(t=>{const x=P+t.q[0]*(W-P*2),y=10+t.q[1]*(H-50),r=6+Math.sqrt(t.m)/9;const c=t.imp<0?(t.q[1]<.5?'#df4146':'#e8930c'):'#12a679';const anchor=t.q[0]>.6?'end':'start';const dx=t.q[0]>.6?-(r+4):r+4;s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" fill-opacity=".85" stroke="#fff" stroke-width="2"/><text x="${x+dx}" y="${y+4}" text-anchor="${anchor}" font-size="12" font-weight="700" fill="#1d2735">${t.n}</text>`});
+  $('#quad').innerHTML=s+'</svg>';
+  $('#alerts').innerHTML=[["#d6338a","Emerging trend","“Click & Collect wait” mentions up 38% this week","Leeds Trinity and Birmingham Bullring. Estimated −4 NPS if it continues."],["#e8930c","Spike detected","“Promo code errors” tripled since Tuesday","All on checkout, iOS app 6.2. Linked to 14 tickets."],["#12a679","Bright spot","Glasgow Buchanan St leads on staff helpfulness","81% positive. Shared as a playbook with North region managers."]].map(a=>`<div class="panel alert" style="--c:${a[0]}"><div class="small" style="font-weight:800;color:${a[0]};letter-spacing:.6px;text-transform:uppercase">${a[1]}</div><b style="display:block;font-size:15px;margin:4px 0">${a[2]}</b><div class="small muted">${a[3]}</div></div>`).join('');
+  const QA=[["Why did NPS drop in the North?","North NPS fell 9 points in 30 days. <b>Returns process</b> explains most of it: 62% of Manchester detractors mention being refused a refund without a paper receipt, though the order was in the Kestrel app. Leeds adds <b>Click &amp; Collect wait</b> (20+ minutes at peak). <br><br><b>Recommended:</b> accept app order history as proof of purchase at all stores, and add a Click &amp; Collect locker at Leeds Trinity. Projected recovery: +7 NPS in the North."],["What should we fix before Black Friday?","Three fixes cover 71% of negative online feedback: <b>1.</b> delivery delays with the second courier (2,140 mentions, −7.2 NPS); <b>2.</b> promo code failures on iOS app checkout (tripled this week); <b>3.</b> size guidance on trousers (1,210 mentions). Fixing the first two protects about <b>£120k</b> of the £193k revenue at risk."],["Which stores are best at staff service?","Glasgow Buchanan St (81% positive), London Oxford St (78%) and Bristol Cabot Circus (76%). Shoppers name staff who fetch sizes from the stockroom and offer Click &amp; Collect alternatives. Westfield Stratford trails at 52%, mostly on weekend staffing."],["Summarise this week for the exec team","Group NPS <b>42</b> (▲6). Checkout CSAT up after the one-page checkout launch. Biggest risk: Click &amp; Collect waits in the North and Midlands. 87% of detractors were contacted within SLA, and 41% of those re-scored 7 or higher. Google rating steady at 4.6 with 214 new reviews from the promoter invite flow."]];
+  $('#ask').innerHTML=QA.map((q,i)=>`<button data-i="${i}">${q[0]}</button>`).join('');
+  let iv;$$('#ask button').forEach(b=>b.onclick=()=>{clearInterval(iv);const a=QA[+b.dataset.i][1];const el=$('#answer');el.innerHTML='<span class="muted">Analysing 16,590 responses…</span>';setTimeout(()=>{let n=0;const plain=a;iv=setInterval(()=>{n+=6;let out=plain.slice(0,n);if(n>=plain.length){out=plain;clearInterval(iv)}el.innerHTML=out.replace(/<[^>]*$/,'')},14)},500)})}
+/* ---------- reputation ---------- */
+const REV=[{n:"James S.",src:"Google",c:"#4285f4",st:"Oxford St",r:2,t:"Queue for fitting rooms was 25 minutes on Saturday and only one till open.",reply:"Hi James, thank you for telling us. A 25-minute wait isn't what we want for you. We've shared this with our Oxford Street team and added weekend staff for fitting rooms and tills. We'd love to welcome you back."},
+ {n:"Rebecca T.",src:"Trustpilot",c:"#00b67a",st:"Online",r:1,t:"Promo code didn't work and customer service took 3 days to reply.",reply:"Hi Rebecca, I'm sorry about the code and the wait. We've fixed the checkout issue, and I've applied your discount to the order. Our team now replies within 24 hours."},
+ {n:"Aaron K.",src:"Google",c:"#4285f4",st:"Glasgow Buchanan St",r:5,t:"Callum's team are brilliant. Found my size in the back and held it for me.",reply:"Thanks so much, Aaron! We'll pass this on to Callum and the team. See you next time."},
+ {n:"Nadia P.",src:"App Store",c:"#1d2735",st:"Kestrel app",r:3,t:"Love the clothes but the app logs me out every time I open it.",reply:"Hi Nadia, thanks for the feedback. Our app team has a fix in the next release, out this week."}];
+function renderRep(){const S=sel();const g=wavg(S,s=>s.g);
+  $('#rkpis').innerHTML=[["Avg rating",g.toFixed(1)+"★",`<span class="up">▲ 0.1</span> in 30 days`],["New reviews","1,284",`across 4 platforms`],["Response rate","96%",`<span class="up">▲ 41 pts</span> with Wing AI`],["Median reply time","38m",`was 2.4 days`],["Negative reviews","11%",`<span class="up">▼ 3 pts</span>`],["Locations tracked",S.length,`Google Business Profiles`]].map(x=>`<div class="panel kpi"><div class="l">${x[0]}</div><div class="v">${x[1]}</div><div class="d">${x[2]}</div></div>`).join('');
+  $('#rstores').innerHTML=[...S].sort((a,b)=>b.g-a.g).map(s=>`<div class="stage" style="grid-template-columns:minmax(0,1fr) 90px 40px"><span style="overflow:hidden;text-overflow:ellipsis">${s.n}</span><div class="track"><i style="width:${(s.g-3)/2*100}%;background:${s.g>=4.5?'var(--good)':s.g>=4.2?'var(--warn)':'var(--bad)'}"></i></div><b style="text-align:right">${s.g}</b></div>`).join('')}
+function renderReviews(){$('#reviews').innerHTML=REV.map((r,i)=>`<div class="rv"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><b>${r.n}</b><span class="src" style="background:${r.c}">${r.src}</span><span class="small muted">${r.st}</span><div style="flex:1"></div><span class="stars">${'★'.repeat(r.r)}<span style="color:#d5dbe2">${'★'.repeat(5-r.r)}</span></span></div><div>${r.t}</div><div id="rr${i}"></div><div style="display:flex;gap:8px"><button class="btn ghost" data-w="${i}">✦ Wing a response</button></div></div>`).join('');
+  $$('[data-w]').forEach(b=>b.onclick=()=>{const i=+b.dataset.w,box=$('#rr'+i);box.innerHTML=`<div class="wing"><textarea aria-label="Reply to ${REV[i].n}"></textarea><div style="display:flex;justify-content:flex-end;margin-top:8px"><button class="btn pri">Post reply</button></div></div>`;const ta=box.querySelector('textarea');let n=0;const txt=REV[i].reply;const iv=setInterval(()=>{ta.value=txt.slice(0,n+=4);if(n>=txt.length)clearInterval(iv)},16);box.querySelector('.btn').onclick=()=>{box.innerHTML=`<div class="small" style="color:var(--good);font-weight:700">✓ Reply posted to ${REV[i].src}</div>`;b.remove()}})}
+/* ---------- integrations ---------- */
+const INT=[["Commerce & payments",[["Shopify","#5e8e3e","S","Orders, customers, fulfilment events",1],["Stripe","#635bff","S","Payment and refund events",1],["Klaviyo","#1d1d1d","K","Push survey segments into flows",1]]],
+ ["CRM",[["Salesforce","#00a1e0","SF","Scores and themes on the contact record",1],["MS Dynamics 365","#0b53ce","D","Sync responses to accounts",0],["HubSpot","#ff7a59","H","Contact properties and workflows",0]]],
+ ["Helpdesk",[["Zendesk","#03363d","Z","Two-way ticket sync",1],["Freshdesk","#25c16f","F","Create tickets from responses",0],["Intercom","#1f8ded","I","CSAT after conversations",0],["Jira","#2684ff","J","Escalate product issues",0]]],
+ ["Store-floor alerts",[["Slack","#4a154b","#","Alerts to #store-ops by location",1],["Microsoft Teams","#5059c9","T","Alerts to regional channels",0],["Google Chat","#1a73e8","G","Space notifications",0]]],
+ ["Data & BI",[["Snowflake","#29b5e8","❄","Nightly response export",1],["Power BI","#e8b100","P","CX tiles in exec reporting",1],["Tableau","#e97627","T","Connector for analysts",0],["BigQuery","#4386fa","B","Warehouse sync",0],["Segment","#52bd94","S","Behaviour events for targeting",0]]],
+ ["POS, orders & automation",[["REST API & webhooks","#253043","{}","Trigger surveys from POS transactions",1],["SFTP","#4a5667","⇅","Nightly store receipt files",1],["Zapier","#ff4f00","Z","6,000+ apps",0]]]];
+function renderInt(){let on=0;$('#ints').innerHTML=INT.map(([c,a])=>`<div class="cat">${c}</div><div class="grid g-3" style="gap:10px;margin:8px 0 16px">${a.map(x=>{on+=x[4];return `<div class="ig"><div class="ic" style="background:${x[1]}">${x[2]}</div><div style="min-width:0"><div class="n">${x[0]}</div><div class="s">${x[3]}</div></div><button class="tg" aria-pressed="${!!x[4]}" aria-label="Connect ${x[0]}" data-n="${x[0]}"></button></div>`}).join('')}</div>`).join('');
+  $('#icount').textContent=on+' connected';
+  $$('#ints .tg').forEach(b=>b.onclick=()=>{const v=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',v);toast(b.dataset.n+(v?' connected':' disconnected'));const n=$$('#ints .tg[aria-pressed="true"]').length;$('#icount').textContent=n+' connected'})}
+$('#recipes').innerHTML=[["Shopify","Order delivered","+2 days","Delivery CSAT on WhatsApp (Echo)"],["POS via SFTP","Store receipt","same evening","In-store NPS by location"],["Score ≤ 6","Detractor","instantly","Zendesk ticket with order context + Slack alert"],["Score 9–10","Promoter","+2 hours","Klaviyo flow with Google review invite"],["Stripe","Refund issued","+1 day","Returns CES survey"],["All responses","Nightly","02:00","Snowflake → Power BI exec dashboard"]].map(r=>`<div class="recipe"><span class="pill p-info">${r[0]}</span><b>${r[1]}</b><span class="muted small">${r[2]}</span><span class="arrow">→</span><span>${r[3]}</span></div>`).join('');
+/* ---------- boot ---------- */
+renderDash();renderRules();page('pdp');echoStart();renderTix();renderCog();renderRep();renderReviews();renderInt();
+const hv=(location.hash||'').slice(1);let sv=null;try{sv=localStorage.getItem('ss-view')}catch(e){}
+if(TITLES[hv])go(hv);else if(sv&&TITLES[sv])go(sv);
+})();
+</script>
+</body></html>
