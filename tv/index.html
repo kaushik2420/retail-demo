@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="SurveySparrow TV">
+<title>SurveySparrow TV</title>
+<style>
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+video{position:fixed;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+#tap{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translateX(-50%);font:600 15px -apple-system,system-ui,sans-serif;color:#fff;background:rgba(0,0,0,.55);padding:10px 16px;border-radius:999px;transition:opacity .6s}
+</style></head><body>
+<video id="v" src="../retail-loop.mp4" autoplay muted loop playsinline preload="auto"></video>
+<div id="tap">Tap once for full screen</div>
+<script>
+const v=document.getElementById('v'),tap=document.getElementById('tap');
+// Belt and braces: restart if 'loop' is ever ignored, and resume after any stall.
+v.addEventListener('ended',()=>{v.currentTime=0;v.play()});
+v.addEventListener('pause',()=>setTimeout(()=>v.play().catch(()=>{}),300));
+v.addEventListener('stalled',()=>{v.load();v.play().catch(()=>{})});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)v.play().catch(()=>{})});
+v.play().catch(()=>{});
+async function wake(){try{if('wakeLock' in navigator)await navigator.wakeLock.request('screen')}catch(e){}}
+wake();document.addEventListener('visibilitychange',wake);
+document.body.addEventListener('click',async()=>{
+  v.play().catch(()=>{});wake();
+  const el=document.documentElement;
+  try{if(el.requestFullscreen)await el.requestFullscreen();else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();}catch(e){}
+  tap.style.opacity=0;
+});
+setTimeout(()=>tap.style.opacity=0,6000);
+</script>
+</body></html>
